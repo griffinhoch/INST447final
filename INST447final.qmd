@@ -1,3 +1,116 @@
-#initial_commit
+## Source(s) and Extraction
 
-#new_code
+```{python}
+# Required packages — run this once in the terminal before using the notebook:
+# pip install nflreadpy pandas pyarrow
+
+import nflreadpy as nfl
+import pandas as pd
+```
+
+---
+
+### Source Details Documentation
+
+For this project, we are pulling NFL play-by-play data from the **nflverse** ecosystem using the Python package **nflreadpy**. We chose play-by-play data because our project looks at team tendencies in specific game situations — early downs, fourth downs, red zone plays, and scoring drives — and this dataset has one row per play, which makes that kind of analysis straightforward.
+
+**How to find and access the same data:**
+
+The package is called `nflreadpy` and can be installed from PyPI. The package homepage is at [https://nflreadpy.nflverse.com/](https://nflreadpy.nflverse.com/), and the source code is on GitHub at [https://github.com/nflverse/nflreadpy](https://github.com/nflverse/nflreadpy). To install it, run:
+
+```bash
+pip install nflreadpy pandas pyarrow
+```
+
+Once installed, the 2023 play-by-play data can be loaded with one function call:
+
+```python
+pbp = nfl.load_pbp(seasons=[2023])
+```
+
+The full API reference for available load functions is at [https://nflreadpy.nflverse.com/api/load_functions/](https://nflreadpy.nflverse.com/api/load_functions/). Data dictionaries describing every column in the play-by-play dataset are available through the related R package's documentation at [https://nflreadr.nflverse.com/articles/dictionary_pbp.html](https://nflreadr.nflverse.com/articles/dictionary_pbp.html). The raw data files themselves are hosted on GitHub under [https://github.com/nflverse/nflverse-data](https://github.com/nflverse/nflverse-data), where `nflreadpy` retrieves them as Parquet files.
+
+**How the data was originally collected and generated:**
+
+The underlying data comes from official NFL game records sourced from the NFL's and ESPN's data feeds, which log every play of every game in real time. The nflverse project uses the R package `nflfastR` ([https://www.nflfastr.com/](https://www.nflfastr.com/)) to parse those raw records and enrich them with a large number of derived variables, including expected points, win probability, air yards, and other advanced metrics. The enriched data is then published to the nflverse-data GitHub repository and updated throughout the season, usually within a few hours of games ending. `nflreadpy` is simply a Python-friendly wrapper that downloads those files and loads them into a DataFrame.
+
+The data is released under a **CC-BY 4.0** license, which means it is free to use as long as you credit the source. More information about the license is on the nflreadpy homepage.
+
+**Variables of interest:**
+
+The following table describes each column we are keeping or using in this project. Any variable marked as *derived* is not in the raw data and will be computed during the transformation step.
+
+| Variable Name | Description | Values |
+|---|---|---|
+| `season` | The NFL season year | Integer; `2023` for this project |
+| `week` | The week number within the season | Integer; 1–18 for regular season games |
+| `game_id` | A unique identifier for each game | String; formatted as `YYYY_WW_AWAY_HOME`, e.g. `2023_01_BUF_NYJ` |
+| `season_type` | Whether the game was regular season or postseason | String; `"REG"` or `"POST"` — we filter to `"REG"` only |
+| `posteam` | The team on offense (the team with possession) | String; 2–3 letter NFL team abbreviation, e.g. `"KC"` or `"PHI"` |
+| `defteam` | The team on defense | String; same abbreviation format as `posteam` |
+| `down` | The current down | Integer; 1, 2, 3, or 4; `NaN` on kickoffs and other non-scrimmage plays |
+| `ydstogo` | Yards needed to earn a first down | Integer; typically 1–99; on 4th down this is also yards needed for a conversion |
+| `yardline_100` | Yards from the offensive team's current position to the opponent's end zone | Integer; 1 means the offense is at the opponent's 1-yard line, 99 means they are at their own 1-yard line |
+| `play_type` | The category of play | String; values include `"pass"`, `"run"`, `"punt"`, `"field_goal"`, `"kickoff"`, `"no_play"`, `"qb_kneel"`, `"qb_spike"` |
+| `pass` | Whether the play was a pass attempt (includes plays that ended in a sack) | Binary integer; `1` = pass, `0` = not a pass; `NaN` on non-scrimmage plays |
+| `rush` | Whether the play was a rushing attempt | Binary integer; `1` = rush, `0` = not a rush; `NaN` on non-scrimmage plays |
+| `first_down` | Whether the play resulted in a first down being earned | Binary integer; `1` = first down earned, `0` = no first down |
+| `touchdown` | Whether the play resulted in a touchdown | Binary integer; `1` = touchdown scored, `0` = no touchdown |
+| `fourth_down_converted` | Whether the offense successfully converted a 4th down attempt | Binary integer; `1` = converted, `0` = failed; `NaN` when the play was not a 4th down attempt |
+| `fourth_down_failed` | Whether the offense failed to convert a 4th down attempt | Binary integer; `1` = failed, `0` = converted or not applicable; `NaN` when not a 4th down attempt |
+| `drive` | The drive number within the game for the offensive team | Integer; resets to 1 at the start of each game |
+| `drive_play_count` | The total number of plays that occurred during the current drive | Integer |
+| `drive_ended_with_score` | Whether the drive ended with a touchdown or field goal | Binary integer; `1` = scoring drive, `0` = drive did not end in a score |
+| `yards_gained` | The number of yards gained (or lost) on the play | Integer; can be negative for losses on the play |
+| `game_seconds_remaining` | Total seconds left in the game at the time of the play | Integer; ranges from 3600 (start of game) to 0 (end of game) |
+| `score_differential` | The offensive team's current score minus the defensive team's score | Integer; negative values mean the offense is trailing |
+| `in_red_zone` | *(Derived)* Whether the offense's line of scrimmage is inside the opponent's 20-yard line | Binary integer; `1` if `yardline_100 <= 20`, otherwise `0` |
+
+---
+
+### Extraction Code
+
+```{python}
+# Load 2023 NFL play-by-play data for the regular season
+pbp = nfl.load_pbp(seasons=[2023])
+
+# nflreadpy loads data as a Polars DataFrame by default.
+# We convert it to pandas since our group is more comfortable
+# using pandas for filtering, grouping, and exporting.
+pbp = pbp.to_pandas()
+
+# Confirm the data loaded correctly
+print("Shape (rows, columns):", pbp.shape)
+print("\nFirst 20 column names:")
+print(list(pbp.columns[:20]))
+```
+
+---
+
+### Preview of Raw Dataset
+
+```{python}
+pbp.head()
+```
+
+---
+
+### Save Raw Dataset
+
+```{python}
+# Save the raw extracted data before any transformations
+pbp.to_csv("raw_nfl_pbp_2023.csv", index=False)
+print("Saved: raw_nfl_pbp_2023.csv")
+```
+
+---
+
+### Extraction Code Documentation
+
+The extraction step is pretty simple — `nfl.load_pbp(seasons=[2023])` downloads the complete play-by-play dataset for the 2023 NFL season directly from the nflverse-data GitHub repository. No API key, login, or manual file download is required.
+
+When the data loads, it comes as a **Polars** DataFrame. Polars is a fast DataFrame library designed for large datasets, but since our group has been working with pandas throughout this course, we immediately convert it using `.to_pandas()`. This does not change any of the data — it just gives us a more familiar interface for the filtering, grouping, and summarizing steps that come later.
+
+We load only the 2023 season because our project is specifically focused on comparing team tendencies within a single, recent, complete NFL season. Loading multiple seasons would make the analysis harder to interpret since rosters, coaching staffs, and schemes change year to year.
+
+After loading and converting, the raw dataset has **49,665 rows and 372 columns**. Each row is one play. At this stage, the data includes every play type — kickoffs, extra points, and clock-stopping plays are all still in. Filtering down to only the plays relevant to our four research questions happens in the transformation step.
