@@ -1,0 +1,73 @@
+---
+title: "Practice with CSVs, Section 1"
+format: html
+---
+
+# Making a DataFrame from a `dict`
+
+This is **bold** text, this is *empasized text*,
+
+Put some notes here
+
+```{python}
+import pandas as pd
+
+```
+
+# Making a DataFrame from a `dict`
+
+This is **bold** text, this is *empasized text*,
+
+Put some notes here
+
+```{python}
+favs = {"show" : ["Breaking Bad", "Prison Break", "The Office", "Andor"],
+        "Likes" : [13, 5, 10, 1],
+        "Dislikes" : [1, 0, 3, 0]}
+favs_df = pd.DataFrame(favs)
+
+favs_df
+```
+
+# Simple CSV reading
+
+```{python}
+random_data = pd.read_csv("2-11-26/random_correlated_data.csv")
+
+random_data
+
+
+```
+
+# Messy CSV reading
+
+## When theres junk at the top
+
+- Link to pandas doc on read_CSV
+
+https://pandas.pydata.org/docs/reference/api/pandas.read_csv.html
+
+```{python}
+pymovies = pd.read_csv("2-11-26/python_movies.csv")
+pymovies
+pymovies.dtypes
+
+pymovies = pd.read_csv("2-11-26/python_movies.csv", header = 5)
+pymovies
+pymovies.dtypes
+
+```
+
+
+## Here's the problem 
+
+
+```{python}
+import pandas as pd
+
+df = pd.read_csv("2-11-26/python_movies_mod3.csv", skiprows=5)
+print(df.head())
+
+```
+
+
