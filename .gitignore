@@ -1,2 +1,4 @@
 raw_nfl_pbp_2023.csv
 .DS_Store
+
+This file contains the dataset from the nlfverse data source using the nflreadpy python package. Don't store things here.
