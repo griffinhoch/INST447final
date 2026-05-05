@@ -12,8 +12,7 @@ import pandas as pd
 
 ### Source Details Documentation
 
-For this project, we are pulling NFL play-by-play data from the **nflverse** ecosystem using the Python package **nflreadpy**. We chose play-by-play data because our project looks at team tendencies in specific game situations — early downs, fourth downs, red zone plays, and scoring drives — and this dataset has one row per play, which makes that kind of analysis straightforward.
-
+For this project, we are using NFL play-by-play data from the nflverse through the Python package nflreadpy. We chose play-by-play data because our project is focused on team tendencies in specific situations (like early downs, fourth downs, and red zone plays), and this dataset has one row per play, which makes that kind of analysis possible.
 **How to find and access the same data:**
 
 The package is called `nflreadpy` and can be installed from PyPI. The package homepage is at [https://nflreadpy.nflverse.com/](https://nflreadpy.nflverse.com/), and the source code is on GitHub at [https://github.com/nflverse/nflreadpy](https://github.com/nflverse/nflreadpy). To install it, run:
@@ -32,14 +31,12 @@ The full API reference for available load functions is at [https://nflreadpy.nfl
 
 **How the data was originally collected and generated:**
 
-The underlying data comes from official NFL game records sourced from the NFL's and ESPN's data feeds, which log every play of every game in real time. The nflverse project uses the R package `nflfastR` ([https://www.nflfastr.com/](https://www.nflfastr.com/)) to parse those raw records and enrich them with a large number of derived variables, including expected points, win probability, air yards, and other advanced metrics. The enriched data is then published to the nflverse-data GitHub repository and updated throughout the season, usually within a few hours of games ending. `nflreadpy` is simply a Python-friendly wrapper that downloads those files and loads them into a DataFrame.
+The data comes from official NFL game records (along with sources like ESPN), where every play in every game is logged in real time. The nflverse team processes that raw data using tools like nflfastR, adding extra fields like expected points, win probability, and other advanced metrics.
 
-The data is released under a **CC-BY 4.0** license, which means it is free to use as long as you credit the source. More information about the license is on the nflreadpy homepage.
-
+After that, the cleaned and enhanced data is uploaded to GitHub and updated regularly during the season. The nflreadpy package just makes it easy to download and load that data into Python.
 **Variables of interest:**
 
-The following table describes each column we are keeping or using in this project. Any variable marked as *derived* is not in the raw data and will be computed during the transformation step.
-
+Below are the main variables we will use. Some of these come directly from the dataset, and a few will be created later.
 | Variable Name | Description | Values |
 |---|---|---|
 | `season` | The NFL season year | Integer; `2023` for this project |
@@ -107,10 +104,9 @@ print("Saved: raw_nfl_pbp_2023.csv")
 
 ### Extraction Code Documentation
 
-The extraction step is pretty simple — `nfl.load_pbp(seasons=[2023])` downloads the complete play-by-play dataset for the 2023 NFL season directly from the nflverse-data GitHub repository. No API key, login, or manual file download is required.
+The load_pbp() function pulls the 2023 play-by-play data directly from nflverse. The data first loads as a Polars DataFrame, so we convert it to pandas because that’s what we’ve been using in class.
 
-When the data loads, it comes as a **Polars** DataFrame. Polars is a fast DataFrame library designed for large datasets, but since our group has been working with pandas throughout this course, we immediately convert it using `.to_pandas()`. This does not change any of the data — it just gives us a more familiar interface for the filtering, grouping, and summarizing steps that come later.
+We only load one season to keep things consistent and easier to analyze. After loading, the dataset has around 49,000 plays, and each row represents one play.
 
-We load only the 2023 season because our project is specifically focused on comparing team tendencies within a single, recent, complete NFL season. Loading multiple seasons would make the analysis harder to interpret since rosters, coaching staffs, and schemes change year to year.
+At this point, the dataset still includes everything (like kickoffs and penalties), so we’ll filter it down later based on what we actually need for our questions.
 
-After loading and converting, the raw dataset has **49,665 rows and 372 columns**. Each row is one play. At this stage, the data includes every play type — kickoffs, extra points, and clock-stopping plays are all still in. Filtering down to only the plays relevant to our four research questions happens in the transformation step.
