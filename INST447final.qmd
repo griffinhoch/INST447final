@@ -36,7 +36,7 @@ The data comes from official NFL game records (along with sources like ESPN), wh
 After that, the cleaned and enhanced data is uploaded to GitHub and updated regularly during the season. The nflreadpy package just makes it easy to download and load that data into Python.
 **Variables of interest:**
 
-Below are the main variables we will use. Some of these come directly from the dataset, and a few will be created later.
+Below are the main variables we will use. Some of these come directly from the dataset, and a few will be created later. These variables were selcted as they support analytical goals of the project like fourth down decision making, measuring passing tendencies, scoring efficiency, and red-zone touchdown effectiveness. 
 | Variable Name | Description | Values |
 |---|---|---|
 | `season` | The NFL season year | Integer; `2023` for this project |
