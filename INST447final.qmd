@@ -1,5 +1,5 @@
 ---
-title: "INST447 NFL Team Tendencies Project"
+title: "INST447 Final project"
 author: "Griffin Hoch, Brandon Weber, Dany Drammeh, John Valencia"
 
 ---
