@@ -1,3 +1,13 @@
+---
+title: "INST447 NFL Team Tendencies Project"
+author: "Griffin Hoch, Brandon Weber, Dany Drammeh, John Valencia"
+
+---
+
+## Executive Summary
+
+*(Add executive summary here. Should cover: 1) target audience and purpose, 2) brief summary of the data source, 3) any major conclusions from the analysis, and 4) what parts of the project were especially challenging or interesting.)*
+
 ## Source(s) and Extraction
 
 ```{python}
@@ -6,13 +16,13 @@
 
 import nflreadpy as nfl
 import pandas as pd
+import numpy as np
 ```
-
----
 
 ### Source Details Documentation
 
-For this project, we are using NFL play-by-play data from the nflverse through the Python package nflreadpy. We chose play-by-play data because our project is focused on team tendencies in specific situations (like early downs, fourth downs, and red zone plays), and this dataset has one row per play, which makes that kind of analysis possible.
+For this project, we are using NFL play-by-play data from the nflverse through the Python package `nflreadpy`. We chose play-by-play data because our project is focused on team tendencies in specific situations, like early downs, fourth downs, red zone plays, and scoring drives. Since the dataset has one row per play, it lets us filter to those exact situations instead of only using season-level totals.
+
 **How to find and access the same data:**
 
 The package is called `nflreadpy` and can be installed from PyPI. The package homepage is at [https://nflreadpy.nflverse.com/](https://nflreadpy.nflverse.com/), and the source code is on GitHub at [https://github.com/nflverse/nflreadpy](https://github.com/nflverse/nflreadpy). To install it, run:
@@ -23,57 +33,65 @@ pip install nflreadpy pandas pyarrow
 
 Once installed, the 2023 play-by-play data can be loaded with one function call:
 
-```python
+```{python}
 pbp = nfl.load_pbp(seasons=[2023])
 ```
 
-The full API reference for available load functions is at [https://nflreadpy.nflverse.com/api/load_functions/](https://nflreadpy.nflverse.com/api/load_functions/). Data dictionaries describing every column in the play-by-play dataset are available through the related R package's documentation at [https://nflreadr.nflverse.com/articles/dictionary_pbp.html](https://nflreadr.nflverse.com/articles/dictionary_pbp.html). The raw data files themselves are hosted on GitHub under [https://github.com/nflverse/nflverse-data](https://github.com/nflverse/nflverse-data), where `nflreadpy` retrieves them as Parquet files.
+The full API reference for available load functions is at [https://nflreadpy.nflverse.com/api/load_functions/](https://nflreadpy.nflverse.com/api/load_functions/). Data dictionaries describing every column in the play-by-play dataset are available through the related R package documentation at [https://nflreadr.nflverse.com/articles/dictionary_pbp.html](https://nflreadr.nflverse.com/articles/dictionary_pbp.html). The raw data files are hosted on GitHub under [https://github.com/nflverse/nflverse-data](https://github.com/nflverse/nflverse-data), where `nflreadpy` retrieves them as Parquet files.
 
 **How the data was originally collected and generated:**
 
-The data comes from official NFL game records (along with sources like ESPN), where every play in every game is logged in real time. The nflverse team processes that raw data using tools like nflfastR, adding extra fields like expected points, win probability, and other advanced metrics.
+The data comes from official NFL game records, along with sources like ESPN, where every play in every game is logged in real time. The nflverse team processes that raw data using tools like `nflfastR`, adding extra fields like expected points, win probability, air yards, and other advanced metrics.
 
-After that, the cleaned and enhanced data is uploaded to GitHub and updated regularly during the season. The nflreadpy package just makes it easy to download and load that data into Python.
-**Variables of interest:**
+After that, the cleaned and enhanced data is uploaded to GitHub and updated regularly during the season. The `nflreadpy` package makes it easier to download and load that data into Python.
 
-Below are the main variables we will use. Some of these come directly from the dataset, and a few will be created later. These variables were selected as they support analytical goals of the project like fourth down decision making, measuring passing tendencies, scoring efficiency, and red-zone touchdown effectiveness. 
+**Project questions:**
+
+Our project uses this dataset to answer four main questions:
+
+1. Which NFL teams had the highest pass rate on 1st and 2nd down with 10+ yards to go in 2023?
+2. Which NFL teams attempted the most 4th down conversions instead of punting or kicking a field goal in 2023, and what was their success rate?
+3. Which NFL teams had the shortest average number of plays per scoring drive in 2023?
+4. Which NFL teams had the highest touchdown rate on plays inside the opponent's 20-yard line in 2023?
+
+### Variables of Interest
+
+Below are the main variables we will use. Some come directly from the original dataset, and one variable is created later during transformation.
+
 | Variable Name | Description | Values |
 |---|---|---|
 | `season` | The NFL season year | Integer; `2023` for this project |
 | `week` | The week number within the season | Integer; 1–18 for regular season games |
 | `game_id` | A unique identifier for each game | String; formatted as `YYYY_WW_AWAY_HOME`, e.g. `2023_01_BUF_NYJ` |
-| `season_type` | Whether the game was regular season or postseason | String; `"REG"` or `"POST"` — we filter to `"REG"` only |
-| `posteam` | The team on offense (the team with possession) | String; 2–3 letter NFL team abbreviation, e.g. `"KC"` or `"PHI"` |
-| `defteam` | The team on defense | String; same abbreviation format as `posteam` |
-| `down` | The current down | Integer; 1, 2, 3, or 4; `NaN` on kickoffs and other non-scrimmage plays |
-| `ydstogo` | Yards needed to earn a first down | Integer; typically 1–99; on 4th down this is also yards needed for a conversion |
-| `yardline_100` | Yards from the offensive team's current position to the opponent's end zone | Integer; 1 means the offense is at the opponent's 1-yard line, 99 means they are at their own 1-yard line |
-| `play_type` | The category of play | String; values include `"pass"`, `"run"`, `"punt"`, `"field_goal"`, `"kickoff"`, `"no_play"`, `"qb_kneel"`, `"qb_spike"` |
-| `pass` | Whether the play was a pass attempt (includes plays that ended in a sack) | Binary integer; `1` = pass, `0` = not a pass; `NaN` on non-scrimmage plays |
-| `rush` | Whether the play was a rushing attempt | Binary integer; `1` = rush, `0` = not a rush; `NaN` on non-scrimmage plays |
-| `first_down` | Whether the play resulted in a first down being earned | Binary integer; `1` = first down earned, `0` = no first down |
-| `touchdown` | Whether the play resulted in a touchdown | Binary integer; `1` = touchdown scored, `0` = no touchdown |
-| `fourth_down_converted` | Whether the offense successfully converted a 4th down attempt | Binary integer; `1` = converted, `0` = failed; `NaN` when the play was not a 4th down attempt |
-| `fourth_down_failed` | Whether the offense failed to convert a 4th down attempt | Binary integer; `1` = failed, `0` = converted or not applicable; `NaN` when not a 4th down attempt |
-| `drive` | The drive number within the game for the offensive team | Integer; resets to 1 at the start of each game |
-| `drive_play_count` | The total number of plays that occurred during the current drive | Integer |
-| `drive_ended_with_score` | Whether the drive ended with a touchdown or field goal | Binary integer; `1` = scoring drive, `0` = drive did not end in a score |
-| `yards_gained` | The number of yards gained (or lost) on the play | Integer; can be negative for losses on the play |
-| `game_seconds_remaining` | Total seconds left in the game at the time of the play | Integer; ranges from 3600 (start of game) to 0 (end of game) |
-| `score_differential` | The offensive team's current score minus the defensive team's score | Integer; negative values mean the offense is trailing |
-| `in_red_zone` | *(Derived)* Whether the offense's line of scrimmage is inside the opponent's 20-yard line | Binary integer; `1` if `yardline_100 <= 20`, otherwise `0` |
-
----
+| `season_type` | Whether the game was regular season or postseason | String; `"REG"` or `"POST"` |
+| `posteam` | The team on offense, or the team with possession | String; NFL team abbreviation |
+| `defteam` | The team on defense | String; NFL team abbreviation |
+| `down` | The current down | Integer; 1, 2, 3, or 4 |
+| `ydstogo` | Yards needed to earn a first down | Numeric |
+| `yardline_100` | Yards from the offense to the opponent's end zone | Numeric; lower values mean closer to scoring |
+| `play_type` | The category of play | String; examples include `"pass"`, `"run"`, `"punt"`, `"field_goal"` |
+| `pass` | Whether the play was a pass attempt | Binary; `1` = pass, `0` = not a pass |
+| `rush` | Whether the play was a rushing attempt | Binary; `1` = rush, `0` = not a rush |
+| `first_down` | Whether the play resulted in a first down | Binary; `1` = first down, `0` = no first down |
+| `touchdown` | Whether the play resulted in a touchdown | Binary; `1` = touchdown, `0` = no touchdown |
+| `fourth_down_converted` | Whether the offense converted a 4th down attempt | Binary; `1` = converted, `0` = did not convert |
+| `fourth_down_failed` | Whether the offense failed a 4th down attempt | Binary; `1` = failed, `0` = not failed or not applicable |
+| `drive` | Drive number within the game | Integer |
+| `drive_play_count` | Number of plays in the drive | Integer |
+| `drive_ended_with_score` | Whether the drive ended in a score | Binary; `1` = scoring drive, `0` = no score |
+| `yards_gained` | Yards gained or lost on the play | Numeric |
+| `game_seconds_remaining` | Seconds remaining in the game | Numeric |
+| `score_differential` | Offensive team's score minus defensive team's score | Numeric |
+| `in_red_zone` | Derived variable for red zone plays | Binary; `1` if `yardline_100 <= 20`, otherwise `0` |
 
 ### Extraction Code
 
 ```{python}
-# Load 2023 NFL play-by-play data for the regular season
+# Load 2023 NFL play-by-play data
 pbp = nfl.load_pbp(seasons=[2023])
 
 # nflreadpy loads data as a Polars DataFrame by default.
-# We convert it to pandas since our group is more comfortable
-# using pandas for filtering, grouping, and exporting.
+# We convert it to pandas because our group is more comfortable using pandas.
 pbp = pbp.to_pandas()
 
 # Confirm the data loaded correctly
@@ -82,31 +100,281 @@ print("\nFirst 20 column names:")
 print(list(pbp.columns[:20]))
 ```
 
----
-
 ### Preview of Raw Dataset
 
 ```{python}
 pbp.head()
 ```
 
----
-
 ### Save Raw Dataset
 
 ```{python}
-# Save the raw extracted data before any transformations
+# Save the raw data before making changes.
+# Note: this file is large, so it should not be committed to GitHub.
 pbp.to_csv("raw_nfl_pbp_2023.csv", index=False)
 print("Saved: raw_nfl_pbp_2023.csv")
 ```
 
----
-
 ### Extraction Code Documentation
 
-The load_pbp() function pulls the 2023 play-by-play data directly from nflverse. The data first loads as a Polars DataFrame, so we convert it to pandas because that’s what we’ve been using in class.
+The `load_pbp()` function pulls the 2023 play-by-play data directly from nflverse. The data first loads as a Polars DataFrame, so we convert it to pandas because that is what we have mostly used in class.
 
-We only load one season to keep things consistent and easier to analyze. After loading, the dataset has around 49,000 plays, and each row represents one play.
+We only load one season to keep the project consistent and easier to analyze. After loading, the dataset has around 49,000 plays, with each row representing one play.
 
-At this point, the dataset still includes everything (like kickoffs and penalties), so we’ll filter it down later based on what we actually need for our questions.
+At this point, the dataset still includes everything, including kickoffs, penalties, and other play types. We filter it down later based on what we actually need for our four questions.
 
+---
+
+## Analysis and Evaluation
+
+*(Add descriptive EDA statistics here — min, max, mean, median, and missing values for numeric variables; frequency tables for categorical variables.)*
+
+*(Add descriptive EDA visualizations here — histograms for numeric variables, bar plots for categorical variables.)*
+
+*(Add descriptive EDA narrative here — summarize the patterns you observed, note anything expected or unexpected about the distributions.)*
+
+*(Add bias-related EDA code here — examine missing value patterns, group balance, and relationships between variables that might indicate bias.)*
+
+*(Add bias-related EDA narrative here — explain what you examined and what it suggests about potential bias in the data collection or generation process.)*
+
+---
+
+## Transformation Processes
+
+### Transformation Overview
+
+This section takes the raw 2023 NFL play-by-play data and turns it into a cleaner team-level dataset. Instead of leaving the data as one row per play, we create a final dataset with one row per team and several summary metrics.
+
+The four metrics we create are:
+
+1. Pass rate on 1st and 2nd down with 10+ yards to go
+2. Fourth down conversion attempts and success rate
+3. Average number of plays per scoring drive
+4. Red zone touchdown rate
+
+### Check That the Raw Data Is Available
+
+```{python}
+# If the Source & Extraction section already ran, pbp should already exist.
+# This backup makes the section easier to run by itself if needed.
+
+try:
+    pbp
+except NameError:
+    pbp = nfl.load_pbp(seasons=[2023]).to_pandas()
+
+print(f"Raw data available: {pbp.shape[0]:,} plays and {pbp.shape[1]} columns")
+```
+
+### Step 1: Filter to Regular Season Games
+
+We are focusing on regular season tendencies, so we remove postseason games.
+
+```{python}
+pbp_reg = pbp[pbp["season_type"] == "REG"].copy()
+
+print(f"Regular season plays: {pbp_reg.shape[0]:,}")
+print(f"Removed {pbp.shape[0] - pbp_reg.shape[0]:,} non-regular-season plays")
+```
+
+### Step 2: Create a Red Zone Indicator
+
+The raw data has `yardline_100`, but we create a simpler `in_red_zone` column to make the red zone question easier to answer.
+
+```{python}
+pbp_reg["in_red_zone"] = (pbp_reg["yardline_100"] <= 20).astype(int)
+
+red_zone_count = pbp_reg["in_red_zone"].sum()
+print(f"Red zone plays: {red_zone_count:,}")
+```
+
+### Step 3: Keep Scrimmage Plays
+
+For most of our questions, we only want normal offensive plays. This removes plays like kickoffs and extra points.
+
+```{python}
+pbp_scrimmage = pbp_reg[
+    (pbp_reg["play_type"].isin(["pass", "run", "qb_kneel", "qb_spike"])) |
+    (pbp_reg["pass"] == 1) |
+    (pbp_reg["rush"] == 1)
+].copy()
+
+print(f"Scrimmage plays: {pbp_scrimmage.shape[0]:,}")
+```
+
+### Question 1: Pass Rate on 1st/2nd Down with 10+ Yards to Go
+
+This answers which teams passed most often on 1st or 2nd down when they needed at least 10 yards.
+
+```{python}
+early_down_long = pbp_scrimmage[
+    (pbp_scrimmage["down"].isin([1, 2])) &
+    (pbp_scrimmage["ydstogo"] >= 10)
+].copy()
+
+q1_results = early_down_long.groupby("posteam").agg(
+    early_down_long_plays=("play_id", "count"),
+    pass_plays=("pass", "sum"),
+    rush_plays=("rush", "sum")
+).reset_index()
+
+q1_results["early_down_pass_rate_pct"] = (
+    q1_results["pass_plays"] / q1_results["early_down_long_plays"] * 100
+).round(2)
+
+q1_results = q1_results.sort_values("early_down_pass_rate_pct", ascending=False)
+q1_results["early_down_pass_rate_rank"] = range(1, len(q1_results) + 1)
+
+q1_results.head(10)
+```
+
+### Question 2: Fourth Down Attempts and Success Rate
+
+This answers which teams went for it most often on 4th down and how often they converted.
+
+```{python}
+fourth_down_attempts = pbp_scrimmage[
+    (pbp_scrimmage["down"] == 4) &
+    (pbp_scrimmage["play_type"].isin(["pass", "run"]))
+].copy()
+
+q2_results = fourth_down_attempts.groupby("posteam").agg(
+    fourth_down_attempts=("play_id", "count"),
+    fourth_down_conversions=("fourth_down_converted", "sum"),
+    fourth_down_failures=("fourth_down_failed", "sum")
+).reset_index()
+
+q2_results["fourth_down_success_rate_pct"] = (
+    q2_results["fourth_down_conversions"] / q2_results["fourth_down_attempts"] * 100
+).round(2)
+
+q2_results = q2_results.sort_values("fourth_down_attempts", ascending=False)
+q2_results["fourth_down_attempt_rank"] = range(1, len(q2_results) + 1)
+
+q2_results.head(10)
+```
+
+### Question 3: Average Plays Per Scoring Drive
+
+This answers which teams scored in the fewest plays on average.
+
+```{python}
+scoring_drive_plays = pbp_scrimmage[pbp_scrimmage["drive_ended_with_score"] == 1].copy()
+
+unique_scoring_drives = scoring_drive_plays.groupby(
+    ["game_id", "posteam", "drive"]
+).agg(
+    plays_in_scoring_drive=("drive_play_count", "max")
+).reset_index()
+
+q3_results = unique_scoring_drives.groupby("posteam").agg(
+    total_scoring_drives=("drive", "count"),
+    avg_plays_per_scoring_drive=("plays_in_scoring_drive", "mean")
+).reset_index()
+
+q3_results["avg_plays_per_scoring_drive"] = q3_results["avg_plays_per_scoring_drive"].round(2)
+
+q3_results = q3_results.sort_values("avg_plays_per_scoring_drive")
+q3_results["scoring_drive_efficiency_rank"] = range(1, len(q3_results) + 1)
+
+q3_results.head(10)
+```
+
+### Question 4: Red Zone Touchdown Rate
+
+This answers which teams scored touchdowns most often on plays inside the opponent's 20-yard line.
+
+```{python}
+red_zone_plays = pbp_scrimmage[pbp_scrimmage["in_red_zone"] == 1].copy()
+
+q4_results = red_zone_plays.groupby("posteam").agg(
+    red_zone_plays=("play_id", "count"),
+    red_zone_touchdowns=("touchdown", "sum")
+).reset_index()
+
+q4_results["red_zone_td_rate_pct"] = (
+    q4_results["red_zone_touchdowns"] / q4_results["red_zone_plays"] * 100
+).round(2)
+
+q4_results = q4_results.sort_values("red_zone_td_rate_pct", ascending=False)
+q4_results["red_zone_td_rank"] = range(1, len(q4_results) + 1)
+
+q4_results.head(10)
+```
+
+### Combine Results into Final Dataset
+
+Now we merge the four result tables into one final dataset, so each team has all of its metrics in the same row.
+
+```{python}
+final_dataset = q1_results[
+    ["posteam", "early_down_long_plays", "early_down_pass_rate_pct", "early_down_pass_rate_rank"]
+].copy()
+
+final_dataset = final_dataset.merge(
+    q2_results[["posteam", "fourth_down_attempts", "fourth_down_success_rate_pct", "fourth_down_attempt_rank"]],
+    on="posteam",
+    how="outer"
+)
+
+final_dataset = final_dataset.merge(
+    q3_results[["posteam", "total_scoring_drives", "avg_plays_per_scoring_drive", "scoring_drive_efficiency_rank"]],
+    on="posteam",
+    how="outer"
+)
+
+final_dataset = final_dataset.merge(
+    q4_results[["posteam", "red_zone_plays", "red_zone_td_rate_pct", "red_zone_td_rank"]],
+    on="posteam",
+    how="outer"
+)
+
+final_dataset = final_dataset.fillna(0)
+final_dataset = final_dataset.sort_values("posteam").reset_index(drop=True)
+
+print("Final dataset shape:", final_dataset.shape)
+final_dataset.head()
+```
+
+### Save Final Dataset
+
+```{python}
+final_dataset.to_csv("nfl_team_tendencies_2023.csv", index=False)
+
+q1_results.to_csv("q1_early_down_pass_rate.csv", index=False)
+q2_results.to_csv("q2_fourth_down_conversions.csv", index=False)
+q3_results.to_csv("q3_scoring_drive_efficiency.csv", index=False)
+q4_results.to_csv("q4_red_zone_touchdowns.csv", index=False)
+
+print("Saved final dataset and individual question files.")
+```
+
+### Transformation Documentation
+
+The transformation process starts with the raw 2023 NFL play-by-play data and narrows it down into the situations we actually care about for our questions.
+
+First, we filter to regular season games only. We do this because our project is about regular season tendencies, and playoff games can involve different coaching decisions and strategies.
+
+Next, we create the `in_red_zone` variable. This is based on `yardline_100`, where a play is considered in the red zone if the offense is at or inside the opponent's 20-yard line.
+
+We also filter to scrimmage plays for the parts of the project focused on offensive tendencies. This helps remove plays like kickoffs and extra points that do not really answer our questions.
+
+For Question 1, we look only at 1st and 2nd down plays with 10 or more yards to go. Then we calculate what percentage of those plays were passes for each team.
+
+For Question 2, we look at 4th down plays where the offense chose to run or pass instead of punting or kicking a field goal. Then we count attempts and calculate each team's success rate.
+
+For Question 3, we identify drives that ended in points and calculate the average number of plays in those scoring drives. Teams with lower averages are scoring faster.
+
+For Question 4, we look at red zone plays and calculate how often each team scored a touchdown on those plays.
+
+Finally, we merge all four results together into one team-level dataset. This final dataset is easier to use because each row is one NFL team, and the columns contain all of the tendency metrics we created.
+
+---
+
+## Data Product and Description
+
+*(Add final export code here if anything additional is needed beyond what was saved above.)*
+
+*(Add a description of each variable in the final dataset `nfl_team_tendencies_2023.csv` here — column name, what it represents, and what kind of values it contains.)*
+
+*(Add a user guide here aimed at your target audience — explain how to load the CSV, what each column means, and how they might use it to answer questions about NFL team tendencies.)*
