@@ -4,9 +4,17 @@ author: "Griffin Hoch, Brandon Weber, Dany Drammeh, John Valencia"
 
 ---
 
+## Extra Mile
+
+We went beyond simple team stats by creating custom metrics from detailed play-by-play data, like early-down passing tendencies, fourth down aggressiveness, scoring drive efficiency, and red zone touchdown efficiency. This required filtering and transforming thousands of plays into specific game situations.
+
 ## Executive Summary
 
 *(Add executive summary here. Should cover: 1) target audience and purpose, 2) brief summary of the data source, 3) any major conclusions from the analysis, and 4) what parts of the project were especially challenging or interesting.)*
+
+### Achieved Purpose
+
+*Add achived purpose here.*
 
 ## Source(s) and Extraction
 
@@ -368,6 +376,212 @@ For Question 3, we identify drives that ended in points and calculate the averag
 For Question 4, we look at red zone plays and calculate how often each team scored a touchdown on those plays.
 
 Finally, we merge all four results together into one team-level dataset. This final dataset is easier to use because each row is one NFL team, and the columns contain all of the tendency metrics we created.
+
+---
+
+## Analysis and Evaluation
+
+
+### Summary Statistics
+
+Before answering our four core questions, we investigated our data deeply and took a look at summary statistics and variable distributions. 
+
+Here, we take a look at the minimum, maximum, and average values for our eight variables at a quick glance. We will be diving deeper into each of these distributions later on. 
+```{python}
+
+sum_columns = ["early_down_long_plays", "early_down_pass_rate_pct","fourth_down_attempts","fourth_down_success_rate_pct", "total_scoring_drives", "avg_plays_per_scoring_drive","red_zone_plays", "red_zone_td_rate_pct"]
+
+
+final_dataset[sum_columns].describe()
+```
+
+We check the median of each variable. Without context, these summary statistics do not mean much. We will dive deeper later, however. We also check to make sure there are no missing values, of which there are none. 
+
+```{python}
+
+print(final_dataset[sum_columns].median())
+
+print(final_dataset[sum_columns].isnull().sum())
+```
+
+### Correlation
+
+An interesting correlation metric to check is the relationship between teams that attempt a lot of fourth down plays compared to the teams that are most successful at fourth downs percentage wise. Are the most aggressive teamas converting the most?
+
+There is actually a slight negative correlation between these two variables at -.122, meaning that these two variables are not very correlated at all. There is not much of a relationship between aggressive teams and successful teams on fourth down, a slight inverse one if any.
+
+```{python}
+x = final_dataset["fourth_down_attempts"]
+y = final_dataset["fourth_down_success_rate_pct"]
+
+print(x.corr(y))
+```
+
+Here is a scatter plot showing there is not much correlation between fourth down attempts and percentage. 
+
+```{python}
+import matplotlib.pyplot as plt
+
+plt.figure
+plt.scatter(final_dataset["fourth_down_attempts"], final_dataset["fourth_down_success_rate_pct"])
+plt.xlabel("Fourth Down Attempts")
+plt.ylabel("Success Rate")
+plt.title("Fourth Down Attempts compared to Success Rate")
+plt.show()
+```
+
+Another correlation metric that we thought may be interesting was the correlation between long scoring drives and frequency. Do longer scoring drives often lead to more successful drives?
+
+The answer here is also no, there is not much correlation between drive length and scoring frequency at all. 
+
+```{python}
+x = final_dataset["total_scoring_drives"]
+y = final_dataset["avg_plays_per_scoring_drive"]
+
+print(x.corr(y))
+```
+
+### Visualizations and Distributions 
+
+We visualized the distribution of each variable to see if there were any patterns to be found in the data. 
+
+
+Most teams in the NFL tend to gather around the 55% pass rate mark. However, there is another peak at 61% pass rate. The distribution is generally bimodal, showing that there are generally two groups of teams in the NFL, aggressive teams and conservative teams on early downs. There are a few outliers, nobody that is terribly far outside the normal range, however. The Washington Commanders are the most aggressive team, and the Miami Dolphins are the most conservative team.
+
+```{python}
+
+plt.figure()
+plt.hist(final_dataset["early_down_pass_rate_pct"].values, bins=15, color="blue")
+plt.title("Early Down Pass Rate Distribution")
+plt.xlabel("Pass Rate (%)")
+plt.ylabel("Number of Teams")
+plt.show()
+```
+
+
+Most teams tend to be around the same level of aggressiveness when it comes to attempting 4th downs. There is a little bit of variation, but not an incredible amount. Most teams have attempted between 15-30 attempts in the 2023 season. There are a few teams that are outliers, and attempted a lot of fourth downs. The two major outliers were the Carolina Panthers and Detroit Lions in the 2023 season. 
+```{python}
+
+plt.figure()
+final_dataset["fourth_down_attempts"].hist(bins=16, color="blue")
+plt.title("Fourth Down Attempts")
+plt.xlabel("Attempts")
+plt.ylabel("Teams")
+plt.show()
+```
+
+There is a fair amount of variation when it comes to fourth down success rate. It tends to follow generally a normal distribution, with an exception around 45, where more teams cluster. There are a couple teams that have trouble converting, and one team, the Philadelphia Eagles, which were an outlier in terms of success. This is due to the introduction of their "Tush Push" play, which proved to be very successful for them.
+
+```{python}
+
+plt.figure()
+final_dataset["fourth_down_success_rate_pct"].hist(bins=16, color="blue")
+plt.title("Fourth Down Success Rate Percentage")
+plt.xlabel("Percentage")
+plt.ylabel("Teams")
+plt.show()
+```
+
+There is a decent amount of variation in total team scoring drives. This makes sense, considering there is generally a good variation of teams that are good vs bad in the league, and scoring is obviously an essential part of what makes a team good or bad. There is a peak in the center, around 65-70 scoring drives, but not a peak outside of that. 
+
+```{python}
+
+plt.figure()
+final_dataset["total_scoring_drives"].hist(bins=16, color="blue")
+plt.title("Total Scoring Drives")
+plt.xlabel("Drives")
+plt.ylabel("Teams")
+plt.show()
+```
+
+There is a pretty conistent amount of plays that it takes teams to score on average. Between 7 and 9 plays is the averge amount. There are still outliers, however. The New York Jets had the quickest scoring drives, and the Carolina Panthers had the longest scoring drives on average. This matches up with the Panthers being a team that went for a lot of 4th downs, as it means that drives consistently went to 4th downs. 
+
+```{python}
+
+plt.figure()
+final_dataset["avg_plays_per_scoring_drive"].hist(bins=16, color="blue")
+plt.title("Average Plays Per Scoring Drive")
+plt.xlabel("Plays per Drive")
+plt.ylabel("Teams")
+plt.show()
+```
+
+There is a fair amount of variation in terms of red zone plays. The most common cluster was around 160 attempts, with a couple major outliers. 
+
+
+```{python}
+
+plt.figure()
+final_dataset["red_zone_plays"].hist(bins=15, color="blue")
+plt.title("Red Zone Plays")
+plt.xlabel("Red Zone Attempts")
+plt.ylabel("Teams")
+plt.show()
+```
+
+Red zone success rate is something that is pretty consistent across the league. Most teams hover at around 14-18%, with very few outliers. 
+
+```{python}
+
+plt.figure()
+final_dataset["red_zone_td_rate_pct"].hist(bins=15, color="blue")
+plt.title("Red Zone Success Rate")
+plt.xlabel("Touchdown Rate")
+plt.ylabel("Teams")
+plt.show()
+```
+
+### Answering Main Questions
+
+
+
+
+```{python}
+top_10_pass_rate = final_dataset[final_dataset["early_down_pass_rate_rank"] <= 10].sort_values("early_down_pass_rate_rank")
+plt.figure()
+top_10_pass_rate["early_down_pass_rate_pct"].plot(kind="bar")
+plt.xticks(ticks=range(10), labels=top_10_pass_rate["posteam"])
+plt.title("Early Down Pass Rate Top 10")
+plt.xlabel("Team")
+plt.ylabel("Pass Rate")
+plt.show()
+```
+
+```{python}
+top10_fourth_down = final_dataset[final_dataset["fourth_down_attempt_rank"] <= 10].sort_values("fourth_down_attempt_rank")
+top10_fourth_down["fourth_down_attempts"].plot(kind="bar")
+plt.xticks(ticks=range(10), labels=top10_fourth_down["posteam"])
+plt.title("Fourth Down Attempts Top 10")
+plt.xlabel("Team")
+plt.ylabel("Attempts")
+plt.show()
+```
+
+```{python}
+top10_scoring_drives = final_dataset[final_dataset["scoring_drive_efficiency_rank"] <= 10].sort_values("scoring_drive_efficiency_rank")
+top10_scoring_drives["avg_plays_per_scoring_drive"].plot(kind="bar")
+plt.xticks(ticks=range(10), labels=top10_scoring_drives["posteam"])
+plt.title("Fewest Plays per Scoring Drive")
+plt.xlabel("Team")
+plt.ylabel("Avg Plays Per Scoring Drive")
+plt.show()
+```
+
+```{python}
+top10_redzone = final_dataset[final_dataset["red_zone_td_rank"] <= 10].sort_values("red_zone_td_rank")
+top10_redzone["red_zone_td_rate_pct"].plot(kind="bar")
+plt.xticks(ticks=range(10), labels=top10_redzone["posteam"])
+plt.title("Red Zone TD Rate Top 10")
+plt.xlabel("Team")
+plt.ylabel("TD Rate")
+plt.show()
+```
+
+*(Add descriptive EDA narrative here — summarize the patterns you observed, note anything expected or unexpected about the distributions.)*
+
+*(Add bias-related EDA code here — examine missing value patterns, group balance, and relationships between variables that might indicate bias.)*
+
+*(Add bias-related EDA narrative here — explain what you examined and what it suggests about potential bias in the data collection or generation process.)*
 
 ---
 
