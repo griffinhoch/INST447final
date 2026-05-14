@@ -386,8 +386,6 @@ Finally, we merge all four results together into one team-level dataset. This fi
 
 ---
 
-## Analysis and Evaluation
-
 
 ### Summary Statistics
 
