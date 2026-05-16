@@ -4,10 +4,6 @@ author: "Griffin Hoch, Brandon Weber, Dany Drammeh, John Valencia"
 
 ---
 
-## Extra Mile
-
-We went beyond simple team stats by creating custom metrics from detailed play-by-play data, like early-down passing tendencies, fourth down aggressiveness, scoring drive efficiency, and red zone touchdown efficiency. This required filtering and transforming thousands of plays into specific game situations.
-
 ## Executive Summary
 
 *(Add executive summary here. Should cover: 1) target audience and purpose, 2) brief summary of the data source, 3) any major conclusions from the analysis, and 4) what parts of the project were especially challenging or interesting.)*
@@ -17,6 +13,14 @@ We went beyond simple team stats by creating custom metrics from detailed play-b
 This project achieved the purpose that it set out to complete. We answered the four main questions that we propose early on in the analysis. Through efficient dataset transformation, we were easily able to capture the top teams in major categories. 
 
 Our audience was intended to be statistically inclined NFL fans looking to do their own analysis. The analysis could be either on or related to these questions. We stuck to this throughout the project and made a dataset that fans could use in their own projects and analysis. 
+
+---
+
+## Extra Mile
+
+We went beyond simple team stats by creating custom metrics from detailed play-by-play data, like early-down passing tendencies, fourth down aggressiveness, scoring drive efficiency, and red zone touchdown efficiency. This required filtering and transforming thousands of plays into specific game situations.
+
+---
 
 ## Source(s) and Extraction
 
@@ -132,25 +136,6 @@ The `load_pbp()` function pulls the 2023 play-by-play data directly from nflvers
 We only load one season to keep the project consistent and easier to analyze. After loading, the dataset has around 49,000 plays, with each row representing one play.
 
 At this point, the dataset still includes everything, including kickoffs, penalties, and other play types. We filter it down later based on what we actually need for our four questions.
-
----
-
-## Analysis and Evaluation
-
-*(Add descriptive EDA statistics here — min, max, mean, median, and missing values for numeric variables; frequency tables for categorical variables.)*
-
-*(Add descriptive EDA visualizations here — histograms for numeric variables, bar plots for categorical variables.)*
-
-*(Add descriptive EDA narrative here — summarize the patterns you observed, note anything expected or unexpected about the distributions.)*
-
-*(Add bias-related EDA code here — examine missing value patterns, group balance, and relationships between variables that might indicate bias.)*
-
-*(Add bias-related EDA narrative here — explain what you examined and what it suggests about potential bias in the data collection or generation process.)*
-
-One important part of this project was checking whether there were any patterns in the dataset that could affect how the results should be interpreted. We checked for missing values in the final dataset. There were no missing values because teams without certain situations were filled with zeros during the merge process. We also examined whether all NFL teams were represented in the dataset and while every team appears in the final dataset not all have the same number of offensive plays. Some teams ran more plays because of differences in offensive pace, game script, time of possession, and overtime games. This means that some teams had more opportunities for situations like fourth down attempts or red zone plays. For example, Cleveland had over 1,500 offensive plays during the season while Las Vegas had around 1,3000. This imbalance shows that some teams had more chances to accumulate statistics. 
-
-Moving on, we investigated whether opportunity volume could affect efficiency metrics. For example, teams with more red zone opportunities may not have higher touchdown efficiency. Similarly, teams with more fourth down attempts are not automatically more successful on fourth down. Our correlation analysis between red zone plays and red zone touchdown rate produced a correlation coefficient of 0.273 which indicates a weak positive relationship. Teams with more opportunities in the red zone sometimes performed better but the relationship wasn't strong enough to suggest that opportunity volume alone determines efficiency. There are also possible sources of bias in how NFL play by play data is generated. The original data comes from NFL game tracking and live game charting. Human scorekeepers and statisticians determine details like play descriptions, penalties, and classification of certain plays. While nflverse standardizes the data, there may still be inconsistencies in how some plays are recorded. 
-
 
 ---
 
@@ -385,7 +370,8 @@ For Question 4, we look at red zone plays and calculate how often each team scor
 Finally, we merge all four results together into one team-level dataset. This final dataset is easier to use because each row is one NFL team, and the columns contain all of the tendency metrics we created.
 
 ---
-## Exploratory Data Analysis
+
+## Analysis and Evaluation
 
 ### Summary Statistics
 
@@ -605,10 +591,17 @@ Red zone touchdown rate was pretty uniform as well, with between 14-18 percent b
 
 An interesting thing to see were the teams that were in the top percentage of multiple questions. For example, the New York Jets were top 3 in early down pass rate and fewest plays per scoring drive. This correlation could be a very interesting thing to study in future projects.
 
+### Bias-Related EDA Code
+
 *(Add bias-related EDA code here — examine missing value patterns, group balance, and relationships between variables that might indicate bias.)*
+
+### Bias-Related EDA Narrative
 
 *(Add bias-related EDA narrative here — explain what you examined and what it suggests about potential bias in the data collection or generation process.)*
 
+We checked for a few potential sources of bias in the dataset. First, there were no missing values in the final dataset since teams with no data in certain situations were filled with zeros during the merge. That said, not all teams had the same number of offensive plays — Cleveland ran over 1,500 while Las Vegas ran around 1,300. This means some teams simply had more opportunities to rack up stats in situations like red zone plays or fourth down attempts.
+
+We also looked at whether having more opportunities correlated with better efficiency. The correlation between red zone plays and red zone touchdown rate was only 0.273, so volume alone doesn't explain performance. Finally, there's some inherent bias in how the raw data is recorded — human scorekeepers classify plays in real time, so there may be some inconsistencies in how certain plays are categorized, even after nflverse standardizes the data.
 ---
 
 ## Data Product and Description
