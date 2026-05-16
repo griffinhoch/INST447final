@@ -14,7 +14,9 @@ We went beyond simple team stats by creating custom metrics from detailed play-b
 
 ### Achieved Purpose
 
-*Add achived purpose here.*
+This project achieved the purpose that it set out to complete. We answered the four main questions that we propose early on in the analysis. Through efficient dataset transformation, we were easily able to capture the top teams in major categories. 
+
+Our audience was intended to be statistically inclined NFL fans looking to do their own analysis. The analysis could be either on or related to these questions. We stuck to this throughout the project and made a dataset that fans could use in their own projects and analysis. 
 
 ## Source(s) and Extraction
 
@@ -148,8 +150,6 @@ At this point, the dataset still includes everything, including kickoffs, penalt
 One important part of this project was checking whether there were any patterns in the dataset that could affect how the results should be interpreted. We checked for missing values in the final dataset. There were no missing values because teams without certain situations were filled with zeros during the merge process. We also examined whether all NFL teams were represented in the dataset and while every team appears in the final dataset not all have the same number of offensive plays. Some teams ran more plays because of differences in offensive pace, game script, time of possession, and overtime games. This means that some teams had more opportunities for situations like fourth down attempts or red zone plays. For example, Cleveland had over 1,500 offensive plays during the season while Las Vegas had around 1,3000. This imbalance shows that some teams had more chances to accumulate statistics. 
 
 Moving on, we investigated whether opportunity volume could affect efficiency metrics. For example, teams with more red zone opportunities may not have higher touchdown efficiency. Similarly, teams with more fourth down attempts are not automatically more successful on fourth down. Our correlation analysis between red zone plays and red zone touchdown rate produced a correlation coefficient of 0.273 which indicates a weak positive relationship. Teams with more opportunities in the red zone sometimes performed better but the relationship wasn't strong enough to suggest that opportunity volume alone determines efficiency. There are also possible sources of bias in how NFL play by play data is generated. The original data comes from NFL game tracking and live game charting. Human scorekeepers and statisticians determine details like play descriptions, penalties, and classification of certain plays. While nflverse standardizes the data, there may still be inconsistencies in how some plays are recorded. 
-
-Moving on, another limitation
 
 
 ---
@@ -385,7 +385,7 @@ For Question 4, we look at red zone plays and calculate how often each team scor
 Finally, we merge all four results together into one team-level dataset. This final dataset is easier to use because each row is one NFL team, and the columns contain all of the tendency metrics we created.
 
 ---
-
+## Exploratory Data Analysis
 
 ### Summary Statistics
 
@@ -539,7 +539,7 @@ plt.show()
 ### Answering Main Questions
 
 
-
+This plot answers our fist main questions, which team had the highest pass rate of the top 10 in 2023. As we can see in the chart, the Washington Commanders, New York Jets and New York Giants were the top three teams in early down pass rate. They passed more than 60% of times on early downs, with the Commanders coming close to 70%.
 
 ```{python}
 top_10_pass_rate = final_dataset[final_dataset["early_down_pass_rate_rank"] <= 10].sort_values("early_down_pass_rate_rank")
@@ -552,8 +552,11 @@ plt.ylabel("Pass Rate")
 plt.show()
 ```
 
+Our second main question dealt with the teams that attempted fourth downs most frequently. As seen earlier in our analysis, the Carolina Panthers and Detroit Lions were the top two teams, followed by the New York Giants. The Panthers attempted the most fourth downs by a solid margin. 
+
 ```{python}
 top10_fourth_down = final_dataset[final_dataset["fourth_down_attempt_rank"] <= 10].sort_values("fourth_down_attempt_rank")
+plt.figure()
 top10_fourth_down["fourth_down_attempts"].plot(kind="bar")
 plt.xticks(ticks=range(10), labels=top10_fourth_down["posteam"])
 plt.title("Fourth Down Attempts Top 10")
@@ -562,8 +565,12 @@ plt.ylabel("Attempts")
 plt.show()
 ```
 
+Our third main question deals with the teams that had the fewest playes per socring drive. The New York Jets, Miami Dolphins, and New England Patriots had the fewest in this regard. All three of these teams are in the same division, coincidentally. 
+
+
 ```{python}
 top10_scoring_drives = final_dataset[final_dataset["scoring_drive_efficiency_rank"] <= 10].sort_values("scoring_drive_efficiency_rank")
+plt.figure()
 top10_scoring_drives["avg_plays_per_scoring_drive"].plot(kind="bar")
 plt.xticks(ticks=range(10), labels=top10_scoring_drives["posteam"])
 plt.title("Fewest Plays per Scoring Drive")
@@ -572,8 +579,12 @@ plt.ylabel("Avg Plays Per Scoring Drive")
 plt.show()
 ```
 
+Our last main question asks which teams converted their red zone opportunities into touchdowns most frequently. The top three in this regard were the San Franciso 49ers, the New England Patriots, and the Washington Commanders. 
+
+
 ```{python}
 top10_redzone = final_dataset[final_dataset["red_zone_td_rank"] <= 10].sort_values("red_zone_td_rank")
+plt.figure()
 top10_redzone["red_zone_td_rate_pct"].plot(kind="bar")
 plt.xticks(ticks=range(10), labels=top10_redzone["posteam"])
 plt.title("Red Zone TD Rate Top 10")
@@ -582,7 +593,17 @@ plt.ylabel("TD Rate")
 plt.show()
 ```
 
-*(Add descriptive EDA narrative here — summarize the patterns you observed, note anything expected or unexpected about the distributions.)*
+### EDA Narrative
+
+Our four main metric distributions all told interesting stories. The distribution for early down pass rate showed that most teams in the NFL pass more than they run on early downs, which is a sharp contrast from how the NFL used to operate. 
+
+There is a solid variation when it comes to fourth down attempts in the NFL, but the most interesting takeaway is that attempts and fourth down success percentage are not very correlated. The teams that attempt the most fourth downs are not the teams that convert the most. This can be seen with the Eagles. They had the highest percentage, but were nt in the top 10 of attempts.
+
+We found out that scoring drive length is pretty uniform around the NFL, with most drives ending up at 8 plays per scoring drive. 
+
+Red zone touchdown rate was pretty uniform as well, with between 14-18 percent being the norm. Although this difference may seem small, over the course of a season, these percentage points tend to add up. 
+
+An interesting thing to see were the teams that were in the top percentage of multiple questions. For example, the New York Jets were top 3 in early down pass rate and fewest plays per scoring drive. This correlation could be a very interesting thing to study in future projects.
 
 *(Add bias-related EDA code here — examine missing value patterns, group balance, and relationships between variables that might indicate bias.)*
 
