@@ -47,9 +47,7 @@ pip install nflreadpy pandas pyarrow
 
 Once installed, the 2023 play-by-play data can be loaded with one function call:
 
-```{python}
 pbp = nfl.load_pbp(seasons=[2023])
-```
 
 The full API reference for available load functions is at [https://nflreadpy.nflverse.com/api/load_functions/](https://nflreadpy.nflverse.com/api/load_functions/). Data dictionaries describing every column in the play-by-play dataset are available through the related R package documentation at [https://nflreadr.nflverse.com/articles/dictionary_pbp.html](https://nflreadr.nflverse.com/articles/dictionary_pbp.html). The raw data files are hosted on GitHub under [https://github.com/nflverse/nflverse-data](https://github.com/nflverse/nflverse-data), where `nflreadpy` retrieves them as Parquet files.
 
