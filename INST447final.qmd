@@ -545,8 +545,6 @@ Our second main question dealt with the teams that attempted fourth downs most f
 ```{python}
 top10_fourth_down = final_dataset[final_dataset["fourth_down_attempt_rank"] <= 10].sort_values("fourth_down_attempt_rank")
 plt.figure()
-top10_fourth_down["fourth_down_attempts"].plot(kind="bar")
-plt.xticks(ticks=range(10), labels=top10_fourth_down["posteam"])
 top10_fourth_down.set_index("posteam")["fourth_down_attempts"].plot(kind="bar")
 plt.xticks(rotation=45)
 plt.title("Fourth Down Attempts Top 10")
@@ -561,8 +559,7 @@ Our third main question deals with the teams that had the fewest playes per socr
 ```{python}
 top10_scoring_drives = final_dataset[final_dataset["scoring_drive_efficiency_rank"] <= 10].sort_values("scoring_drive_efficiency_rank")
 plt.figure()
-top10_scoring_drives["avg_plays_per_scoring_drive"].plot(kind="bar")
-plt.xticks(ticks=range(10), labels=top10_scoring_drives["posteam"])
+top10_scoring_drives.set_index("posteam")["avg_plays_per_scoring_drive"].plot(kind="bar")
 plt.xticks(rotation=45)
 plt.title("Fewest Plays per Scoring Drive")
 plt.xlabel("Team")
@@ -576,8 +573,7 @@ Our last main question asks which teams converted their red zone opportunities i
 ```{python}
 top10_redzone = final_dataset[final_dataset["red_zone_td_rank"] <= 10].sort_values("red_zone_td_rank")
 plt.figure()
-top10_redzone["red_zone_td_rate_pct"].plot(kind="bar")
-plt.xticks(ticks=range(10), labels=top10_redzone["posteam"])
+top10_redzone.set_index("posteam")["red_zone_td_rate_pct"].plot(kind="bar")
 plt.xticks(rotation=45)
 plt.title("Red Zone TD Rate Top 10")
 plt.xlabel("Team")

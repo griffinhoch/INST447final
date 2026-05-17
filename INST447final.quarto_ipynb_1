@@ -35,7 +35,7 @@
         "\n",
         "## Source(s) and Extraction"
       ],
-      "id": "82ef2ba7"
+      "id": "cb498148"
     },
     {
       "cell_type": "code",
@@ -48,7 +48,7 @@
         "import pandas as pd\n",
         "import numpy as np"
       ],
-      "id": "d8447b98",
+      "id": "65d922f9",
       "execution_count": null,
       "outputs": []
     },
@@ -121,7 +121,7 @@
         "\n",
         "### Extraction Code"
       ],
-      "id": "5937577d"
+      "id": "bd78c9ed"
     },
     {
       "cell_type": "code",
@@ -139,7 +139,7 @@
         "print(\"\\nFirst 20 column names:\")\n",
         "print(list(pbp.columns[:20]))"
       ],
-      "id": "f2ba6867",
+      "id": "afbf2eb2",
       "execution_count": null,
       "outputs": []
     },
@@ -149,7 +149,7 @@
       "source": [
         "### Preview of Raw Dataset"
       ],
-      "id": "17e4a72a"
+      "id": "9da67a7a"
     },
     {
       "cell_type": "code",
@@ -157,7 +157,7 @@
       "source": [
         "pbp.head()"
       ],
-      "id": "dad6ec86",
+      "id": "030762f4",
       "execution_count": null,
       "outputs": []
     },
@@ -167,7 +167,7 @@
       "source": [
         "### Save Raw Dataset"
       ],
-      "id": "3f93df79"
+      "id": "d2bc3797"
     },
     {
       "cell_type": "code",
@@ -178,7 +178,7 @@
         "pbp.to_csv(\"raw_nfl_pbp_2023.csv\", index=False)\n",
         "print(\"Saved: raw_nfl_pbp_2023.csv\")"
       ],
-      "id": "0a2e0584",
+      "id": "2d0bbf65",
       "execution_count": null,
       "outputs": []
     },
@@ -210,7 +210,7 @@
         "\n",
         "### Check That the Raw Data Is Available"
       ],
-      "id": "485c03cd"
+      "id": "eeaafc06"
     },
     {
       "cell_type": "code",
@@ -226,7 +226,7 @@
         "\n",
         "print(f\"Raw data available: {pbp.shape[0]:,} plays and {pbp.shape[1]} columns\")"
       ],
-      "id": "485ca8ed",
+      "id": "cb309965",
       "execution_count": null,
       "outputs": []
     },
@@ -238,7 +238,7 @@
         "\n",
         "We are focusing on regular season tendencies, so we remove postseason games."
       ],
-      "id": "bc14cf84"
+      "id": "26b8f2a2"
     },
     {
       "cell_type": "code",
@@ -249,7 +249,7 @@
         "print(f\"Regular season plays: {pbp_reg.shape[0]:,}\")\n",
         "print(f\"Removed {pbp.shape[0] - pbp_reg.shape[0]:,} non-regular-season plays\")"
       ],
-      "id": "024da583",
+      "id": "a2c3cde9",
       "execution_count": null,
       "outputs": []
     },
@@ -261,7 +261,7 @@
         "\n",
         "The raw data has `yardline_100`, but we create a simpler `in_red_zone` column to make the red zone question easier to answer."
       ],
-      "id": "235e2765"
+      "id": "08b76d06"
     },
     {
       "cell_type": "code",
@@ -272,7 +272,7 @@
         "red_zone_count = pbp_reg[\"in_red_zone\"].sum()\n",
         "print(f\"Red zone plays: {red_zone_count:,}\")"
       ],
-      "id": "16922131",
+      "id": "cf1bdae1",
       "execution_count": null,
       "outputs": []
     },
@@ -284,7 +284,7 @@
         "\n",
         "For most of our questions, we only want normal offensive plays. This removes plays like kickoffs and extra points."
       ],
-      "id": "6e71b538"
+      "id": "d322536f"
     },
     {
       "cell_type": "code",
@@ -298,7 +298,7 @@
         "\n",
         "print(f\"Scrimmage plays: {pbp_scrimmage.shape[0]:,}\")"
       ],
-      "id": "97d0a6e4",
+      "id": "67f4add7",
       "execution_count": null,
       "outputs": []
     },
@@ -310,7 +310,7 @@
         "\n",
         "This answers which teams passed most often on 1st or 2nd down when they needed at least 10 yards."
       ],
-      "id": "d43dadbd"
+      "id": "a763e89b"
     },
     {
       "cell_type": "code",
@@ -336,7 +336,7 @@
         "\n",
         "q1_results.head(10)"
       ],
-      "id": "c9185d06",
+      "id": "83898e1a",
       "execution_count": null,
       "outputs": []
     },
@@ -348,7 +348,7 @@
         "\n",
         "This answers which teams went for it most often on 4th down and how often they converted."
       ],
-      "id": "d8d8def2"
+      "id": "3bbcf0a6"
     },
     {
       "cell_type": "code",
@@ -374,7 +374,7 @@
         "\n",
         "q2_results.head(10)"
       ],
-      "id": "3a4812ba",
+      "id": "09a66bda",
       "execution_count": null,
       "outputs": []
     },
@@ -386,7 +386,7 @@
         "\n",
         "This answers which teams scored in the fewest plays on average."
       ],
-      "id": "eee7131b"
+      "id": "d077ccac"
     },
     {
       "cell_type": "code",
@@ -412,7 +412,7 @@
         "\n",
         "q3_results.head(10)"
       ],
-      "id": "3a78ed85",
+      "id": "9189bbaa",
       "execution_count": null,
       "outputs": []
     },
@@ -424,7 +424,7 @@
         "\n",
         "This answers which teams scored touchdowns most often on plays inside the opponent's 20-yard line."
       ],
-      "id": "bbc8ae8c"
+      "id": "c7743628"
     },
     {
       "cell_type": "code",
@@ -446,7 +446,7 @@
         "\n",
         "q4_results.head(10)"
       ],
-      "id": "a94c62b5",
+      "id": "be7ce92c",
       "execution_count": null,
       "outputs": []
     },
@@ -458,7 +458,7 @@
         "\n",
         "Now we merge the four result tables into one final dataset, so each team has all of its metrics in the same row."
       ],
-      "id": "88a51fc4"
+      "id": "4c6578df"
     },
     {
       "cell_type": "code",
@@ -492,7 +492,7 @@
         "print(\"Final dataset shape:\", final_dataset.shape)\n",
         "final_dataset.head()"
       ],
-      "id": "64b52e95",
+      "id": "5490561d",
       "execution_count": null,
       "outputs": []
     },
@@ -502,7 +502,7 @@
       "source": [
         "### Save Final Dataset"
       ],
-      "id": "ac980dc2"
+      "id": "35b057b3"
     },
     {
       "cell_type": "code",
@@ -517,7 +517,7 @@
         "\n",
         "print(\"Saved final dataset and individual question files.\")"
       ],
-      "id": "dc168c0a",
+      "id": "e50929e6",
       "execution_count": null,
       "outputs": []
     },
@@ -555,7 +555,7 @@
         "\n",
         "Here, we take a look at the minimum, maximum, and average values for our eight variables at a quick glance. We will be diving deeper into each of these distributions later on. "
       ],
-      "id": "b81dfbe0"
+      "id": "d7e05697"
     },
     {
       "cell_type": "code",
@@ -566,7 +566,7 @@
         "\n",
         "final_dataset[sum_columns].describe()"
       ],
-      "id": "ea5bb670",
+      "id": "2e7f03cc",
       "execution_count": null,
       "outputs": []
     },
@@ -576,7 +576,7 @@
       "source": [
         "We check the median of each variable. Without context, these summary statistics do not mean much. We will dive deeper later, however. We also check to make sure there are no missing values, of which there are none. "
       ],
-      "id": "dafb1a13"
+      "id": "407e60ab"
     },
     {
       "cell_type": "code",
@@ -586,7 +586,7 @@
         "\n",
         "print(final_dataset[sum_columns].isnull().sum())"
       ],
-      "id": "3aae0be0",
+      "id": "a1c1e50f",
       "execution_count": null,
       "outputs": []
     },
@@ -600,7 +600,7 @@
         "\n",
         "There is actually a slight negative correlation between these two variables at -.122, meaning that these two variables are not very correlated at all. There is not much of a relationship between aggressive teams and successful teams on fourth down, a slight inverse one if any."
       ],
-      "id": "7ba840ba"
+      "id": "72691dfc"
     },
     {
       "cell_type": "code",
@@ -611,7 +611,7 @@
         "\n",
         "print(x.corr(y))"
       ],
-      "id": "dd394874",
+      "id": "15d549cc",
       "execution_count": null,
       "outputs": []
     },
@@ -621,7 +621,7 @@
       "source": [
         "Here is a scatter plot showing there is not much correlation between fourth down attempts and percentage. "
       ],
-      "id": "75b1cbd0"
+      "id": "72db3225"
     },
     {
       "cell_type": "code",
@@ -636,7 +636,7 @@
         "plt.title(\"Fourth Down Attempts compared to Success Rate\")\n",
         "plt.show()"
       ],
-      "id": "9e1a2580",
+      "id": "5e5b4718",
       "execution_count": null,
       "outputs": []
     },
@@ -648,7 +648,7 @@
         "\n",
         "The answer here is also no, there is not much correlation between drive length and scoring frequency at all. "
       ],
-      "id": "300d890d"
+      "id": "dd847284"
     },
     {
       "cell_type": "code",
@@ -659,7 +659,7 @@
         "\n",
         "print(x.corr(y))"
       ],
-      "id": "a6029bd0",
+      "id": "d7c79098",
       "execution_count": null,
       "outputs": []
     },
@@ -674,7 +674,7 @@
         "\n",
         "Most teams in the NFL tend to gather around the 55% pass rate mark. However, there is another peak at 61% pass rate. The distribution is generally bimodal, showing that there are generally two groups of teams in the NFL, aggressive teams and conservative teams on early downs. There are a few outliers, nobody that is terribly far outside the normal range, however. The Washington Commanders are the most aggressive team, and the Miami Dolphins are the most conservative team."
       ],
-      "id": "c664c5c3"
+      "id": "82b443ad"
     },
     {
       "cell_type": "code",
@@ -687,7 +687,7 @@
         "plt.ylabel(\"Number of Teams\")\n",
         "plt.show()"
       ],
-      "id": "9b84b491",
+      "id": "1eb1510c",
       "execution_count": null,
       "outputs": []
     },
@@ -697,7 +697,7 @@
       "source": [
         "Most teams tend to be around the same level of aggressiveness when it comes to attempting 4th downs. There is a little bit of variation, but not an incredible amount. Most teams have attempted between 15-30 attempts in the 2023 season. There are a few teams that are outliers, and attempted a lot of fourth downs. The two major outliers were the Carolina Panthers and Detroit Lions in the 2023 season. "
       ],
-      "id": "43caef40"
+      "id": "9a9db2ab"
     },
     {
       "cell_type": "code",
@@ -710,7 +710,7 @@
         "plt.ylabel(\"Teams\")\n",
         "plt.show()"
       ],
-      "id": "d92284d3",
+      "id": "54906a84",
       "execution_count": null,
       "outputs": []
     },
@@ -720,7 +720,7 @@
       "source": [
         "There is a fair amount of variation when it comes to fourth down success rate. It tends to follow generally a normal distribution, with an exception around 45, where more teams cluster. There are a couple teams that have trouble converting, and one team, the Philadelphia Eagles, which were an outlier in terms of success. This is due to the introduction of their \"Tush Push\" play, which proved to be very successful for them."
       ],
-      "id": "7d3d9c8e"
+      "id": "78fcfa62"
     },
     {
       "cell_type": "code",
@@ -733,7 +733,7 @@
         "plt.ylabel(\"Teams\")\n",
         "plt.show()"
       ],
-      "id": "32f72e88",
+      "id": "66c303ed",
       "execution_count": null,
       "outputs": []
     },
@@ -743,7 +743,7 @@
       "source": [
         "There is a decent amount of variation in total team scoring drives. This makes sense, considering there is generally a good variation of teams that are good vs bad in the league, and scoring is obviously an essential part of what makes a team good or bad. There is a peak in the center, around 65-70 scoring drives, but not a peak outside of that. "
       ],
-      "id": "7e2b8d1d"
+      "id": "e10d9c5b"
     },
     {
       "cell_type": "code",
@@ -756,7 +756,7 @@
         "plt.ylabel(\"Teams\")\n",
         "plt.show()"
       ],
-      "id": "508b8b77",
+      "id": "e268ed56",
       "execution_count": null,
       "outputs": []
     },
@@ -766,7 +766,7 @@
       "source": [
         "There is a pretty conistent amount of plays that it takes teams to score on average. Between 7 and 9 plays is the averge amount. There are still outliers, however. The New York Jets had the quickest scoring drives, and the Carolina Panthers had the longest scoring drives on average. This matches up with the Panthers being a team that went for a lot of 4th downs, as it means that drives consistently went to 4th downs. "
       ],
-      "id": "573d9657"
+      "id": "f0aa4095"
     },
     {
       "cell_type": "code",
@@ -779,7 +779,7 @@
         "plt.ylabel(\"Teams\")\n",
         "plt.show()"
       ],
-      "id": "65c5d540",
+      "id": "2cca9d20",
       "execution_count": null,
       "outputs": []
     },
@@ -789,7 +789,7 @@
       "source": [
         "There is a fair amount of variation in terms of red zone plays. The most common cluster was around 160 attempts, with a couple major outliers. \n"
       ],
-      "id": "0bb797a7"
+      "id": "8ca83980"
     },
     {
       "cell_type": "code",
@@ -802,7 +802,7 @@
         "plt.ylabel(\"Teams\")\n",
         "plt.show()"
       ],
-      "id": "698482c5",
+      "id": "08449ba1",
       "execution_count": null,
       "outputs": []
     },
@@ -812,7 +812,7 @@
       "source": [
         "Red zone success rate is something that is pretty consistent across the league. Most teams hover at around 14-18%, with very few outliers. "
       ],
-      "id": "6246d963"
+      "id": "fd2f4c68"
     },
     {
       "cell_type": "code",
@@ -825,7 +825,7 @@
         "plt.ylabel(\"Teams\")\n",
         "plt.show()"
       ],
-      "id": "b53060e0",
+      "id": "67096c23",
       "execution_count": null,
       "outputs": []
     },
@@ -838,7 +838,7 @@
         "\n",
         "This plot answers our fist main questions, which team had the highest pass rate of the top 10 in 2023. As we can see in the chart, the Washington Commanders, New York Jets and New York Giants were the top three teams in early down pass rate. They passed more than 60% of times on early downs, with the Commanders coming close to 70%."
       ],
-      "id": "8a428f39"
+      "id": "857d893b"
     },
     {
       "cell_type": "code",
@@ -853,7 +853,7 @@
         "plt.ylabel(\"Pass Rate\")\n",
         "plt.show()"
       ],
-      "id": "b2586b43",
+      "id": "96aff91e",
       "execution_count": null,
       "outputs": []
     },
@@ -863,7 +863,7 @@
       "source": [
         "Our second main question dealt with the teams that attempted fourth downs most frequently. As seen earlier in our analysis, the Carolina Panthers and Detroit Lions were the top two teams, followed by the New York Giants. The Panthers attempted the most fourth downs during the 2023 season."
       ],
-      "id": "c5ca5d20"
+      "id": "0e9fc4fc"
     },
     {
       "cell_type": "code",
@@ -871,8 +871,6 @@
       "source": [
         "top10_fourth_down = final_dataset[final_dataset[\"fourth_down_attempt_rank\"] <= 10].sort_values(\"fourth_down_attempt_rank\")\n",
         "plt.figure()\n",
-        "top10_fourth_down[\"fourth_down_attempts\"].plot(kind=\"bar\")\n",
-        "plt.xticks(ticks=range(10), labels=top10_fourth_down[\"posteam\"])\n",
         "top10_fourth_down.set_index(\"posteam\")[\"fourth_down_attempts\"].plot(kind=\"bar\")\n",
         "plt.xticks(rotation=45)\n",
         "plt.title(\"Fourth Down Attempts Top 10\")\n",
@@ -880,7 +878,7 @@
         "plt.ylabel(\"Attempts\")\n",
         "plt.show()"
       ],
-      "id": "9973a52f",
+      "id": "cfe5202f",
       "execution_count": null,
       "outputs": []
     },
@@ -890,7 +888,7 @@
       "source": [
         "Our third main question deals with the teams that had the fewest playes per socring drive. The New York Jets, Miami Dolphins, and New England Patriots had the fewest in this regard. All three of these teams are in the same division, coincidentally. \n"
       ],
-      "id": "ce40474d"
+      "id": "3d34e22d"
     },
     {
       "cell_type": "code",
@@ -898,15 +896,14 @@
       "source": [
         "top10_scoring_drives = final_dataset[final_dataset[\"scoring_drive_efficiency_rank\"] <= 10].sort_values(\"scoring_drive_efficiency_rank\")\n",
         "plt.figure()\n",
-        "top10_scoring_drives[\"avg_plays_per_scoring_drive\"].plot(kind=\"bar\")\n",
-        "plt.xticks(ticks=range(10), labels=top10_scoring_drives[\"posteam\"])\n",
+        "top10_scoring_drives.set_index(\"posteam\")[\"avg_plays_per_scoring_drive\"].plot(kind=\"bar\")\n",
         "plt.xticks(rotation=45)\n",
         "plt.title(\"Fewest Plays per Scoring Drive\")\n",
         "plt.xlabel(\"Team\")\n",
         "plt.ylabel(\"Avg Plays Per Scoring Drive\")\n",
         "plt.show()"
       ],
-      "id": "0a77f3c1",
+      "id": "41fa5565",
       "execution_count": null,
       "outputs": []
     },
@@ -916,7 +913,7 @@
       "source": [
         "Our last main question asks which teams converted their red zone opportunities into touchdowns most frequently. The top three in this regard were the San Franciso 49ers, the New England Patriots, and the Washington Commanders. \n"
       ],
-      "id": "2454d86f"
+      "id": "1bdb016e"
     },
     {
       "cell_type": "code",
@@ -924,15 +921,14 @@
       "source": [
         "top10_redzone = final_dataset[final_dataset[\"red_zone_td_rank\"] <= 10].sort_values(\"red_zone_td_rank\")\n",
         "plt.figure()\n",
-        "top10_redzone[\"red_zone_td_rate_pct\"].plot(kind=\"bar\")\n",
-        "plt.xticks(ticks=range(10), labels=top10_redzone[\"posteam\"])\n",
+        "top10_redzone.set_index(\"posteam\")[\"red_zone_td_rate_pct\"].plot(kind=\"bar\")\n",
         "plt.xticks(rotation=45)\n",
         "plt.title(\"Red Zone TD Rate Top 10\")\n",
         "plt.xlabel(\"Team\")\n",
         "plt.ylabel(\"TD Rate\")\n",
         "plt.show()"
       ],
-      "id": "3a6f6170",
+      "id": "8da5232b",
       "execution_count": null,
       "outputs": []
     },
@@ -954,7 +950,7 @@
         "\n",
         "### Bias-Related EDA Code"
       ],
-      "id": "d97927ec"
+      "id": "8b68d06f"
     },
     {
       "cell_type": "code",
@@ -969,7 +965,7 @@
         "pbp_reg = nfl.load_pbp(seasons=[2023]).to_pandas()\n",
         "pbp_reg = pbp_reg[pbp_reg[\"season_type\"] == \"REG\"].copy()"
       ],
-      "id": "2acba519",
+      "id": "ab89a02e",
       "execution_count": null,
       "outputs": []
     },
@@ -980,7 +976,7 @@
         "# Missing values\n",
         "print(final_dataset.isnull().sum())"
       ],
-      "id": "ef6cf148",
+      "id": "4207298d",
       "execution_count": null,
       "outputs": []
     },
@@ -999,7 +995,7 @@
         "plt.xticks(rotation=45)\n",
         "plt.show()"
       ],
-      "id": "6cc387c8",
+      "id": "34a5f637",
       "execution_count": null,
       "outputs": []
     },
@@ -1014,7 +1010,7 @@
         "\n",
         "print(team_play_counts)"
       ],
-      "id": "ecfc5715",
+      "id": "630bf5e7",
       "execution_count": null,
       "outputs": []
     },
@@ -1030,7 +1026,7 @@
         "plt.ylabel(\"Team\")\n",
         "plt.show()"
       ],
-      "id": "0302eb64",
+      "id": "c4ef201a",
       "execution_count": null,
       "outputs": []
     },
@@ -1051,7 +1047,7 @@
         "plt.title(\"Red Zone Opportunities vs Touchdown Rate\")\n",
         "plt.show()"
       ],
-      "id": "8b0ef45f",
+      "id": "788138f4",
       "execution_count": null,
       "outputs": []
     },
@@ -1067,7 +1063,7 @@
         "plt.ylabel(\"Teams\")\n",
         "plt.show()"
       ],
-      "id": "7f992bde",
+      "id": "a32becf2",
       "execution_count": null,
       "outputs": []
     },
@@ -1114,7 +1110,7 @@
         "\n",
         "### How to Load the CSV"
       ],
-      "id": "529add3f"
+      "id": "86c5a556"
     },
     {
       "cell_type": "code",
@@ -1125,7 +1121,7 @@
         "\n",
         "print(df.head())"
       ],
-      "id": "8226a56e",
+      "id": "83e69222",
       "execution_count": null,
       "outputs": []
     },
@@ -1140,7 +1136,7 @@
         "\n",
         "The dataset is designed for NFL fans, fantasy football players, and sports content creators who want to compare team tendencies during the 2023 NFL season. Examples of how it could be used: Identifying teams that frequently pass in long-yardage situations, comparing aggressive versus conservative offensive teams, finding teams with efficient scoring drives, comparing red zone efficiency across teams, etc."
       ],
-      "id": "5d887b68"
+      "id": "3796238d"
     }
   ],
   "metadata": {
