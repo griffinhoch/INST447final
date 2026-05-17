@@ -658,8 +658,6 @@ plt.show()
 
 ### Bias-Related EDA Narrative
 
-*(Add bias-related EDA narrative here — explain what you examined and what it suggests about potential bias in the data collection or generation process.)*
-
 We checked for a few potential sources of bias in the dataset. First, there were no missing values in the final dataset since teams with no data in certain situations were filled with zeros during the merge. That said, not all teams had the same number of offensive plays — Cleveland ran over 1,500 while Las Vegas ran around 1,300. This means some teams simply had more opportunities to rack up stats in situations like red zone plays or fourth down attempts.
 
 We also looked at whether having more opportunities correlated with better efficiency. The correlation between red zone plays and red zone touchdown rate was only 0.273, so volume alone doesn't explain performance. Finally, there's some inherent bias in how the raw data is recorded — human scorekeepers classify plays in real time, so there may be some inconsistencies in how certain plays are categorized, even after nflverse standardizes the data.
@@ -667,8 +665,48 @@ We also looked at whether having more opportunities correlated with better effic
 
 ## Data Product and Description
 
-*(Add final export code here if anything additional is needed beyond what was saved above.)*
+Column Name                         Description                            Values
 
-*(Add a description of each variable in the final dataset `nfl_team_tendencies_2023.csv` here — column name, what it represents, and what kind of values it contains.)*
+Posteam                         NFL team abbreviation                    String
 
-*(Add a user guide here aimed at your target audience — explain how to load the CSV, what each column means, and how they might use it to answer questions about NFL team tendencies.)*
+early_down_long_plays    Number of 1/2nd down plays with 10+ yards to go    Intege
+
+early_down_pass_rate_pct  Percentage of those plays that were passes    Numeric percentage
+
+early_down_pass_rate_rank       Rank of pass rate among NFL teams              Integer
+
+fourth_down_attempts  Offensive 4th down conversion attempts      Integer
+
+fourth_down_success_rate_pct Percentage of successful 4th down conversions    Numeric percentage
+
+fourth_down_attempt_rank      Rank of fourth down attempts among NFL teams        Integer
+
+total_scoring_drives           Total number of scoring drives                Integer
+
+ avg_plays_per_scoring_drive  Average number of plays needed to score        Numeric
+
+scoring_drive_efficiency_rank Rank based on fastest scoring drives            Integer
+
+ red_zone_plays      Total offensive plays inside the opponent’s 20-yard line    Integer
+
+ red_zone_td_rate_pct  Percentage of red zone plays resulting in touchdowns    Numeric percentage
+
+ red_zone_td_rank    Rank of red zone touchdown efficiency                    Integer
+
+# HOW TO LOAD CSV
+(python)
+
+
+import pandas as pd
+df = pd.read_csv("nfl_team_tendencies_2023.csv")
+
+print(df.head())
+
+Dataset can also be opened with Microsoft Excel or Google sheets 
+
+
+# INTENDED USES 
+
+The dataset is designed for NFL fans, fantasy football players, and sports content creators who want to compare team tendencies during the 2023 NFL season. Examples of how it could be used: Identifying teams that frequently pass in long-yardage situations, comparing aggressive versus conservative offensive teams, finding teams with efficient scoring drives, comparing red zone efficiency across teams, etc.
+
+
