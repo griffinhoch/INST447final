@@ -19,13 +19,13 @@ This project achieved the purpose that it set out to complete. We answered the f
 
 Our audience was intended to be statistically inclined NFL fans looking to do their own analysis. The analysis could be either on or related to these questions. We stuck to this throughout the project and made a dataset that fans could use in their own projects and analysis. 
 
----
+***
 
 ## Extra Mile
 
 We went beyond simple team stats by creating custom metrics from detailed play-by-play data, like early-down passing tendencies, fourth down aggressiveness, scoring drive efficiency, and red zone touchdown efficiency. This required filtering and transforming thousands of plays into specific game situations.
 
----
+***
 
 ## Source(s) and Extraction
 
@@ -140,7 +140,7 @@ We only load one season to keep the project consistent and easier to analyze. Af
 
 At this point, the dataset still includes everything, including kickoffs, penalties, and other play types. We filter it down later based on what we actually need for our four questions.
 
----
+***
 ## Transformation Processes
 
 ### Transformation Overview
@@ -371,7 +371,7 @@ For Question 4, we look at red zone plays and calculate how often each team scor
 
 Finally, we merge all four results together into one team-level dataset. This final dataset is easier to use because each row is one NFL team, and the columns contain all of the tendency metrics we created.
 
----
+***
 
 ## Analysis and Evaluation
 
@@ -673,7 +673,7 @@ plt.show()
 We checked for a few potential sources of bias in the dataset. First, there were no missing values in the final dataset since teams with no data in certain situations were filled with zeros during the merge. That said, not all teams had the same number of offensive plays. Cleveland ran over 1,500 while Las Vegas ran around 1,300. This means some teams simply had more opportunities to rack up stats in situations like red zone plays or fourth down attempts.
 
 We also looked at whether having more opportunities correlated with better efficiency. The correlation between red zone plays and red zone touchdown rate was only 0.273, so volume alone doesn't explain performance. Finally, there's some inherent bias in how the raw data is recorded. Human scorekeepers classify plays in real time, so there may be some inconsistencies in how certain plays are categorized, even after nflverse standardizes the data.
----
+***
 
 ## Data Product and Description
 
