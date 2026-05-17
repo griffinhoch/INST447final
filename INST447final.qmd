@@ -1,7 +1,8 @@
 ---
-title: "INST447 Final project"
+title: "INST447 Final Project"
+subtitle: "Final project for INST447, Spring 2026"
 author: "Griffin Hoch, Brandon Weber, Dany Drammeh, John Valencia"
-
+format: html
 ---
 
 ## Executive Summary
