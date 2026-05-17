@@ -1,0 +1,1152 @@
+{
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "---\n",
+        "title: \"INST447 Final Project\"\n",
+        "subtitle: \"Final project for INST447, Spring 2026\"\n",
+        "author: \"Griffin Hoch, Brandon Weber, Dany Drammeh, John Valencia\"\n",
+        "format: html\n",
+        "---\n",
+        "\n",
+        "## Executive Summary\n",
+        "\n",
+        "This project was designed for NFL fans, fantasy football players, and sports analysts interested in comparing offensive team tendencies during the 2023 NFL season. The goal was to create a clean dataset that goes beyond basic stats and instead focuses on how teams behave in specific game situations. Using play-by-play data from nflverse through the Python package nflreadpy, we transformed nearly 49,000 plays into a final team-level dataset with four main metrics: early-down pass rate, fourth down aggressiveness and success rate, average plays per scoring drive, and red zone touchdown efficiency.\n",
+        "\n",
+        "Several interesting patterns appeared during the analysis. Most NFL teams passed more often than they ran on early downs, showing how pass-heavy the league has become. Fourth down aggressiveness varied a lot between teams, but teams that went for it more often were not always the most successful. We also found that scoring drive length was fairly similar across the league, while red zone touchdown efficiency showed smaller but still meaningful differences between teams. The New York Jets ranked highly in both early-down pass rate and scoring drive efficiency, which stood out during the analysis.\n",
+        "\n",
+        "The hardest part of the project was filtering thousands of plays into the exact situations needed for each research question. We also had to carefully merge and clean the data so that teams were not accidentally removed during transformations. One limitation we found was that some teams had many more offensive opportunities than others, which could affect certain efficiency metrics.\n",
+        "\n",
+        "### Achieved Purpose\n",
+        "\n",
+        "This project achieved the purpose that it set out to complete. We answered the four main questions that we propose early on in the analysis. Through efficient dataset transformation, we were easily able to capture the top teams in major categories. \n",
+        "\n",
+        "Our audience was intended to be statistically inclined NFL fans looking to do their own analysis. The analysis could be either on or related to these questions. We stuck to this throughout the project and made a dataset that fans could use in their own projects and analysis. \n",
+        "\n",
+        "***\n",
+        "\n",
+        "## Extra Mile\n",
+        "\n",
+        "We went beyond simple team stats by creating custom metrics from detailed play-by-play data, like early-down passing tendencies, fourth down aggressiveness, scoring drive efficiency, and red zone touchdown efficiency. This required filtering and transforming thousands of plays into specific game situations.\n",
+        "\n",
+        "***\n",
+        "\n",
+        "## Source(s) and Extraction"
+      ],
+      "id": "5ba10764"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "# Required packages — run this once in the terminal before using the notebook:\n",
+        "# pip install nflreadpy pandas pyarrow\n",
+        "\n",
+        "import nflreadpy as nfl\n",
+        "import pandas as pd\n",
+        "import numpy as np"
+      ],
+      "id": "9d6b127a",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "### Source Details Documentation\n",
+        "\n",
+        "For this project, we are using NFL play-by-play data from the nflverse through the Python package `nflreadpy`. We chose play-by-play data because our project is focused on team tendencies in specific situations, like early downs, fourth downs, red zone plays, and scoring drives. Since the dataset has one row per play, it lets us filter to those exact situations instead of only using season-level totals.\n",
+        "\n",
+        "**How to find and access the same data:**\n",
+        "\n",
+        "The package is called `nflreadpy` and can be installed from PyPI. The package homepage is at [https://nflreadpy.nflverse.com/](https://nflreadpy.nflverse.com/), and the source code is on GitHub at [https://github.com/nflverse/nflreadpy](https://github.com/nflverse/nflreadpy). To install it, run:\n",
+        "\n",
+        "```bash\n",
+        "pip install nflreadpy pandas pyarrow\n",
+        "```\n",
+        "\n",
+        "Once installed, the 2023 play-by-play data can be loaded with one function call:\n",
+        "\n",
+        "pbp = nfl.load_pbp(seasons=[2023])\n",
+        "\n",
+        "The full API reference for available load functions is at [https://nflreadpy.nflverse.com/api/load_functions/](https://nflreadpy.nflverse.com/api/load_functions/). Data dictionaries describing every column in the play-by-play dataset are available through the related R package documentation at [https://nflreadr.nflverse.com/articles/dictionary_pbp.html](https://nflreadr.nflverse.com/articles/dictionary_pbp.html). The raw data files are hosted on GitHub under [https://github.com/nflverse/nflverse-data](https://github.com/nflverse/nflverse-data), where `nflreadpy` retrieves them as Parquet files.\n",
+        "\n",
+        "**How the data was originally collected and generated:**\n",
+        "\n",
+        "The data comes from official NFL game records, along with sources like ESPN, where every play in every game is logged in real time. The nflverse team processes that raw data using tools like `nflfastR`, adding extra fields like expected points, win probability, air yards, and other advanced metrics.\n",
+        "\n",
+        "After that, the cleaned and enhanced data is uploaded to GitHub and updated regularly during the season. The `nflreadpy` package makes it easier to download and load that data into Python.\n",
+        "\n",
+        "**Project questions:**\n",
+        "\n",
+        "Our project uses this dataset to answer four main questions:\n",
+        "\n",
+        "1. Which NFL teams had the highest pass rate on 1st and 2nd down with 10+ yards to go in 2023?\n",
+        "2. Which NFL teams attempted the most 4th down conversions instead of punting or kicking a field goal in 2023, and what was their success rate?\n",
+        "3. Which NFL teams had the shortest average number of plays per scoring drive in 2023?\n",
+        "4. Which NFL teams had the highest touchdown rate on plays inside the opponent's 20-yard line in 2023?\n",
+        "\n",
+        "### Variables of Interest\n",
+        "\n",
+        "Below are the main variables we will use. Some come directly from the original dataset, and one variable is created later during transformation.\n",
+        "\n",
+        "| Variable Name | Description | Values |\n",
+        "|---|---|---|\n",
+        "| `season` | The NFL season year | Integer; `2023` for this project |\n",
+        "| `week` | The week number within the season | Integer; 1–18 for regular season games |\n",
+        "| `game_id` | A unique identifier for each game | String; formatted as `YYYY_WW_AWAY_HOME`, e.g. `2023_01_BUF_NYJ` |\n",
+        "| `season_type` | Whether the game was regular season or postseason | String; `\"REG\"` or `\"POST\"` |\n",
+        "| `posteam` | The team on offense, or the team with possession | String; NFL team abbreviation |\n",
+        "| `defteam` | The team on defense | String; NFL team abbreviation |\n",
+        "| `down` | The current down | Integer; 1, 2, 3, or 4 |\n",
+        "| `ydstogo` | Yards needed to earn a first down | Numeric |\n",
+        "| `yardline_100` | Yards from the offense to the opponent's end zone | Numeric; lower values mean closer to scoring |\n",
+        "| `play_type` | The category of play | String; examples include `\"pass\"`, `\"run\"`, `\"punt\"`, `\"field_goal\"` |\n",
+        "| `pass` | Whether the play was a pass attempt | Binary; `1` = pass, `0` = not a pass |\n",
+        "| `rush` | Whether the play was a rushing attempt | Binary; `1` = rush, `0` = not a rush |\n",
+        "| `first_down` | Whether the play resulted in a first down | Binary; `1` = first down, `0` = no first down |\n",
+        "| `touchdown` | Whether the play resulted in a touchdown | Binary; `1` = touchdown, `0` = no touchdown |\n",
+        "| `fourth_down_converted` | Whether the offense converted a 4th down attempt | Binary; `1` = converted, `0` = did not convert |\n",
+        "| `fourth_down_failed` | Whether the offense failed a 4th down attempt | Binary; `1` = failed, `0` = not failed or not applicable |\n",
+        "| `drive` | Drive number within the game | Integer |\n",
+        "| `drive_play_count` | Number of plays in the drive | Integer |\n",
+        "| `drive_ended_with_score` | Whether the drive ended in a score | Binary; `1` = scoring drive, `0` = no score |\n",
+        "| `yards_gained` | Yards gained or lost on the play | Numeric |\n",
+        "| `game_seconds_remaining` | Seconds remaining in the game | Numeric |\n",
+        "| `score_differential` | Offensive team's score minus defensive team's score | Numeric |\n",
+        "| `in_red_zone` | Derived variable for red zone plays | Binary; `1` if `yardline_100 <= 20`, otherwise `0` |\n",
+        "\n",
+        "### Extraction Code"
+      ],
+      "id": "b5a196da"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "# Load 2023 NFL play-by-play data\n",
+        "pbp = nfl.load_pbp(seasons=[2023])\n",
+        "\n",
+        "# nflreadpy loads data as a Polars DataFrame by default.\n",
+        "# We convert it to pandas because our group is more comfortable using pandas.\n",
+        "pbp = pbp.to_pandas()\n",
+        "\n",
+        "# Confirm the data loaded correctly\n",
+        "print(\"Shape (rows, columns):\", pbp.shape)\n",
+        "print(\"\\nFirst 20 column names:\")\n",
+        "print(list(pbp.columns[:20]))"
+      ],
+      "id": "9e07c625",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "### Preview of Raw Dataset"
+      ],
+      "id": "f21b2a8f"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "pbp.head()"
+      ],
+      "id": "ea6488fe",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "### Save Raw Dataset"
+      ],
+      "id": "53678254"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "# Save the raw data before making changes.\n",
+        "# Note: this file is large, so it should not be committed to GitHub.\n",
+        "pbp.to_csv(\"raw_nfl_pbp_2023.csv\", index=False)\n",
+        "print(\"Saved: raw_nfl_pbp_2023.csv\")"
+      ],
+      "id": "3428da14",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "### Extraction Code Documentation\n",
+        "\n",
+        "The `load_pbp()` function pulls the 2023 play-by-play data directly from nflverse. The data first loads as a Polars DataFrame, so we convert it to pandas because that is what we have mostly used in class.\n",
+        "\n",
+        "We only load one season to keep the project consistent and easier to analyze. After loading, the dataset has around 49,000 plays, with each row representing one play.\n",
+        "\n",
+        "At this point, the dataset still includes everything, including kickoffs, penalties, and other play types. We filter it down later based on what we actually need for our four questions.\n",
+        "\n",
+        "***\n",
+        "## Transformation Processes\n",
+        "\n",
+        "### Transformation Overview\n",
+        "\n",
+        "This section takes the raw 2023 NFL play-by-play data and turns it into a cleaner team-level dataset. Instead of leaving the data as one row per play, we create a final dataset with one row per team and several summary metrics.\n",
+        "\n",
+        "The four metrics we create are:\n",
+        "\n",
+        "1. Pass rate on 1st and 2nd down with 10+ yards to go\n",
+        "2. Fourth down conversion attempts and success rate\n",
+        "3. Average number of plays per scoring drive\n",
+        "4. Red zone touchdown rate\n",
+        "\n",
+        "### Check That the Raw Data Is Available"
+      ],
+      "id": "7c9e7eee"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "# If the Source & Extraction section already ran, pbp should already exist.\n",
+        "# This backup makes the section easier to run by itself if needed.\n",
+        "\n",
+        "try:\n",
+        "    pbp\n",
+        "except NameError:\n",
+        "    pbp = nfl.load_pbp(seasons=[2023]).to_pandas()\n",
+        "\n",
+        "print(f\"Raw data available: {pbp.shape[0]:,} plays and {pbp.shape[1]} columns\")"
+      ],
+      "id": "45c675a0",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "### Step 1: Filter to Regular Season Games\n",
+        "\n",
+        "We are focusing on regular season tendencies, so we remove postseason games."
+      ],
+      "id": "b3e6ad06"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "pbp_reg = pbp[pbp[\"season_type\"] == \"REG\"].copy()\n",
+        "\n",
+        "print(f\"Regular season plays: {pbp_reg.shape[0]:,}\")\n",
+        "print(f\"Removed {pbp.shape[0] - pbp_reg.shape[0]:,} non-regular-season plays\")"
+      ],
+      "id": "d7e66406",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "### Step 2: Create a Red Zone Indicator\n",
+        "\n",
+        "The raw data has `yardline_100`, but we create a simpler `in_red_zone` column to make the red zone question easier to answer."
+      ],
+      "id": "a4f24f52"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "pbp_reg[\"in_red_zone\"] = (pbp_reg[\"yardline_100\"] <= 20).astype(int)\n",
+        "\n",
+        "red_zone_count = pbp_reg[\"in_red_zone\"].sum()\n",
+        "print(f\"Red zone plays: {red_zone_count:,}\")"
+      ],
+      "id": "dd4e1872",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "### Step 3: Keep Scrimmage Plays\n",
+        "\n",
+        "For most of our questions, we only want normal offensive plays. This removes plays like kickoffs and extra points."
+      ],
+      "id": "e50dc299"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "pbp_scrimmage = pbp_reg[\n",
+        "    (pbp_reg[\"play_type\"].isin([\"pass\", \"run\", \"qb_kneel\", \"qb_spike\"])) |\n",
+        "    (pbp_reg[\"pass\"] == 1) |\n",
+        "    (pbp_reg[\"rush\"] == 1)\n",
+        "].copy()\n",
+        "\n",
+        "print(f\"Scrimmage plays: {pbp_scrimmage.shape[0]:,}\")"
+      ],
+      "id": "aa7eb067",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "### Question 1: Pass Rate on 1st/2nd Down with 10+ Yards to Go\n",
+        "\n",
+        "This answers which teams passed most often on 1st or 2nd down when they needed at least 10 yards."
+      ],
+      "id": "7056f75a"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "early_down_long = pbp_scrimmage[\n",
+        "    (pbp_scrimmage[\"down\"].isin([1, 2])) &\n",
+        "    (pbp_scrimmage[\"ydstogo\"] >= 10)\n",
+        "].copy()\n",
+        "\n",
+        "q1_results = early_down_long.groupby(\"posteam\").agg(\n",
+        "    early_down_long_plays=(\"play_id\", \"count\"),\n",
+        "    pass_plays=(\"pass\", \"sum\"),\n",
+        "    rush_plays=(\"rush\", \"sum\")\n",
+        ").reset_index()\n",
+        "\n",
+        "q1_results[\"early_down_pass_rate_pct\"] = (\n",
+        "    q1_results[\"pass_plays\"] / q1_results[\"early_down_long_plays\"] * 100\n",
+        ").round(2)\n",
+        "\n",
+        "q1_results = q1_results.sort_values(\"early_down_pass_rate_pct\", ascending=False)\n",
+        "q1_results[\"early_down_pass_rate_rank\"] = range(1, len(q1_results) + 1)\n",
+        "\n",
+        "q1_results.head(10)"
+      ],
+      "id": "857e7a93",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "### Question 2: Fourth Down Attempts and Success Rate\n",
+        "\n",
+        "This answers which teams went for it most often on 4th down and how often they converted."
+      ],
+      "id": "04516c62"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "fourth_down_attempts = pbp_scrimmage[\n",
+        "    (pbp_scrimmage[\"down\"] == 4) &\n",
+        "    (pbp_scrimmage[\"play_type\"].isin([\"pass\", \"run\"]))\n",
+        "].copy()\n",
+        "\n",
+        "q2_results = fourth_down_attempts.groupby(\"posteam\").agg(\n",
+        "    fourth_down_attempts=(\"play_id\", \"count\"),\n",
+        "    fourth_down_conversions=(\"fourth_down_converted\", \"sum\"),\n",
+        "    fourth_down_failures=(\"fourth_down_failed\", \"sum\")\n",
+        ").reset_index()\n",
+        "\n",
+        "q2_results[\"fourth_down_success_rate_pct\"] = (\n",
+        "    q2_results[\"fourth_down_conversions\"] / q2_results[\"fourth_down_attempts\"] * 100\n",
+        ").round(2)\n",
+        "\n",
+        "q2_results = q2_results.sort_values(\"fourth_down_attempts\", ascending=False)\n",
+        "q2_results[\"fourth_down_attempt_rank\"] = range(1, len(q2_results) + 1)\n",
+        "\n",
+        "q2_results.head(10)"
+      ],
+      "id": "389c6b63",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "### Question 3: Average Plays Per Scoring Drive\n",
+        "\n",
+        "This answers which teams scored in the fewest plays on average."
+      ],
+      "id": "e306f800"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "scoring_drive_plays = pbp_scrimmage[pbp_scrimmage[\"drive_ended_with_score\"] == 1].copy()\n",
+        "\n",
+        "unique_scoring_drives = scoring_drive_plays.groupby(\n",
+        "    [\"game_id\", \"posteam\", \"drive\"]\n",
+        ").agg(\n",
+        "    plays_in_scoring_drive=(\"drive_play_count\", \"max\")\n",
+        ").reset_index()\n",
+        "\n",
+        "q3_results = unique_scoring_drives.groupby(\"posteam\").agg(\n",
+        "    total_scoring_drives=(\"drive\", \"count\"),\n",
+        "    avg_plays_per_scoring_drive=(\"plays_in_scoring_drive\", \"mean\")\n",
+        ").reset_index()\n",
+        "\n",
+        "q3_results[\"avg_plays_per_scoring_drive\"] = q3_results[\"avg_plays_per_scoring_drive\"].round(2)\n",
+        "\n",
+        "q3_results = q3_results.sort_values(\"avg_plays_per_scoring_drive\")\n",
+        "q3_results[\"scoring_drive_efficiency_rank\"] = range(1, len(q3_results) + 1)\n",
+        "\n",
+        "q3_results.head(10)"
+      ],
+      "id": "0939f24b",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "### Question 4: Red Zone Touchdown Rate\n",
+        "\n",
+        "This answers which teams scored touchdowns most often on plays inside the opponent's 20-yard line."
+      ],
+      "id": "b5d370d6"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "red_zone_plays = pbp_scrimmage[pbp_scrimmage[\"in_red_zone\"] == 1].copy()\n",
+        "\n",
+        "q4_results = red_zone_plays.groupby(\"posteam\").agg(\n",
+        "    red_zone_plays=(\"play_id\", \"count\"),\n",
+        "    red_zone_touchdowns=(\"touchdown\", \"sum\")\n",
+        ").reset_index()\n",
+        "\n",
+        "q4_results[\"red_zone_td_rate_pct\"] = (\n",
+        "    q4_results[\"red_zone_touchdowns\"] / q4_results[\"red_zone_plays\"] * 100\n",
+        ").round(2)\n",
+        "\n",
+        "q4_results = q4_results.sort_values(\"red_zone_td_rate_pct\", ascending=False)\n",
+        "q4_results[\"red_zone_td_rank\"] = range(1, len(q4_results) + 1)\n",
+        "\n",
+        "q4_results.head(10)"
+      ],
+      "id": "cb65eabf",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "### Combine Results into Final Dataset\n",
+        "\n",
+        "Now we merge the four result tables into one final dataset, so each team has all of its metrics in the same row."
+      ],
+      "id": "dd63ef26"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "final_dataset = q1_results[\n",
+        "    [\"posteam\", \"early_down_long_plays\", \"early_down_pass_rate_pct\", \"early_down_pass_rate_rank\"]\n",
+        "].copy()\n",
+        "\n",
+        "final_dataset = final_dataset.merge(\n",
+        "    q2_results[[\"posteam\", \"fourth_down_attempts\", \"fourth_down_success_rate_pct\", \"fourth_down_attempt_rank\"]],\n",
+        "    on=\"posteam\",\n",
+        "    how=\"outer\"\n",
+        ")\n",
+        "\n",
+        "final_dataset = final_dataset.merge(\n",
+        "    q3_results[[\"posteam\", \"total_scoring_drives\", \"avg_plays_per_scoring_drive\", \"scoring_drive_efficiency_rank\"]],\n",
+        "    on=\"posteam\",\n",
+        "    how=\"outer\"\n",
+        ")\n",
+        "\n",
+        "final_dataset = final_dataset.merge(\n",
+        "    q4_results[[\"posteam\", \"red_zone_plays\", \"red_zone_td_rate_pct\", \"red_zone_td_rank\"]],\n",
+        "    on=\"posteam\",\n",
+        "    how=\"outer\"\n",
+        ")\n",
+        "\n",
+        "final_dataset = final_dataset.fillna(0)\n",
+        "final_dataset = final_dataset.sort_values(\"posteam\").reset_index(drop=True)\n",
+        "\n",
+        "print(\"Final dataset shape:\", final_dataset.shape)\n",
+        "final_dataset.head()"
+      ],
+      "id": "ad36e292",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "### Save Final Dataset"
+      ],
+      "id": "977866db"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "final_dataset.to_csv(\"nfl_team_tendencies_2023.csv\", index=False)\n",
+        "\n",
+        "q1_results.to_csv(\"q1_early_down_pass_rate.csv\", index=False)\n",
+        "q2_results.to_csv(\"q2_fourth_down_conversions.csv\", index=False)\n",
+        "q3_results.to_csv(\"q3_scoring_drive_efficiency.csv\", index=False)\n",
+        "q4_results.to_csv(\"q4_red_zone_touchdowns.csv\", index=False)\n",
+        "\n",
+        "print(\"Saved final dataset and individual question files.\")"
+      ],
+      "id": "ca9543a0",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "### Transformation Documentation\n",
+        "\n",
+        "The transformation process starts with the raw 2023 NFL play-by-play data and narrows it down into the situations we actually care about for our questions.\n",
+        "\n",
+        "First, we filter to regular season games only. We do this because our project is about regular season tendencies, and playoff games can involve different coaching decisions and strategies.\n",
+        "\n",
+        "Next, we create the `in_red_zone` variable. This is based on `yardline_100`, where a play is considered in the red zone if the offense is at or inside the opponent's 20-yard line.\n",
+        "\n",
+        "We also filter to scrimmage plays for the parts of the project focused on offensive tendencies. This helps remove plays like kickoffs and extra points that do not really answer our questions.\n",
+        "\n",
+        "For Question 1, we look only at 1st and 2nd down plays with 10 or more yards to go. Then we calculate what percentage of those plays were passes for each team.\n",
+        "\n",
+        "For Question 2, we look at 4th down plays where the offense chose to run or pass instead of punting or kicking a field goal. Then we count attempts and calculate each team's success rate.\n",
+        "\n",
+        "For Question 3, we identify drives that ended in points and calculate the average number of plays in those scoring drives. Teams with lower averages are scoring faster.\n",
+        "\n",
+        "For Question 4, we look at red zone plays and calculate how often each team scored a touchdown on those plays.\n",
+        "\n",
+        "Finally, we merge all four results together into one team-level dataset. This final dataset is easier to use because each row is one NFL team, and the columns contain all of the tendency metrics we created.\n",
+        "\n",
+        "***\n",
+        "\n",
+        "## Analysis and Evaluation\n",
+        "\n",
+        "### Summary Statistics\n",
+        "\n",
+        "Before answering our four core questions, we investigated our data deeply and took a look at summary statistics and variable distributions. \n",
+        "\n",
+        "Here, we take a look at the minimum, maximum, and average values for our eight variables at a quick glance. We will be diving deeper into each of these distributions later on. "
+      ],
+      "id": "b8b2803d"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "sum_columns = [\"early_down_long_plays\", \"early_down_pass_rate_pct\",\"fourth_down_attempts\",\"fourth_down_success_rate_pct\", \"total_scoring_drives\", \"avg_plays_per_scoring_drive\",\"red_zone_plays\", \"red_zone_td_rate_pct\"]\n",
+        "\n",
+        "\n",
+        "final_dataset[sum_columns].describe()"
+      ],
+      "id": "cac6e41a",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "We check the median of each variable. Without context, these summary statistics do not mean much. We will dive deeper later, however. We also check to make sure there are no missing values, of which there are none. "
+      ],
+      "id": "bd6b1f67"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "print(final_dataset[sum_columns].median())\n",
+        "\n",
+        "print(final_dataset[sum_columns].isnull().sum())"
+      ],
+      "id": "2e8aa1f6",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "### Correlation\n",
+        "\n",
+        "An interesting correlation metric to check is the relationship between teams that attempt a lot of fourth down plays compared to the teams that are most successful at fourth downs percentage wise. Are the most aggressive teamas converting the most?\n",
+        "\n",
+        "There is actually a slight negative correlation between these two variables at -.122, meaning that these two variables are not very correlated at all. There is not much of a relationship between aggressive teams and successful teams on fourth down, a slight inverse one if any."
+      ],
+      "id": "cca572ad"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "x = final_dataset[\"fourth_down_attempts\"]\n",
+        "y = final_dataset[\"fourth_down_success_rate_pct\"]\n",
+        "\n",
+        "print(x.corr(y))"
+      ],
+      "id": "eb76f9b7",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "Here is a scatter plot showing there is not much correlation between fourth down attempts and percentage. "
+      ],
+      "id": "c0766446"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "import matplotlib.pyplot as plt\n",
+        "\n",
+        "plt.figure\n",
+        "plt.scatter(final_dataset[\"fourth_down_attempts\"], final_dataset[\"fourth_down_success_rate_pct\"])\n",
+        "plt.xlabel(\"Fourth Down Attempts\")\n",
+        "plt.ylabel(\"Success Rate\")\n",
+        "plt.title(\"Fourth Down Attempts compared to Success Rate\")\n",
+        "plt.show()"
+      ],
+      "id": "142f1112",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "Another correlation metric that we thought may be interesting was the correlation between long scoring drives and frequency. Do longer scoring drives often lead to more successful drives?\n",
+        "\n",
+        "The answer here is also no, there is not much correlation between drive length and scoring frequency at all. "
+      ],
+      "id": "acd0d2a0"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "x = final_dataset[\"total_scoring_drives\"]\n",
+        "y = final_dataset[\"avg_plays_per_scoring_drive\"]\n",
+        "\n",
+        "print(x.corr(y))"
+      ],
+      "id": "9cf5c322",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "### Visualizations and Distributions \n",
+        "\n",
+        "We visualized the distribution of each variable to see if there were any patterns to be found in the data. \n",
+        "\n",
+        "\n",
+        "Most teams in the NFL tend to gather around the 55% pass rate mark. However, there is another peak at 61% pass rate. The distribution is generally bimodal, showing that there are generally two groups of teams in the NFL, aggressive teams and conservative teams on early downs. There are a few outliers, nobody that is terribly far outside the normal range, however. The Washington Commanders are the most aggressive team, and the Miami Dolphins are the most conservative team."
+      ],
+      "id": "1d158528"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "plt.figure()\n",
+        "plt.hist(final_dataset[\"early_down_pass_rate_pct\"].values, bins=15, color=\"blue\")\n",
+        "plt.title(\"Early Down Pass Rate Distribution\")\n",
+        "plt.xlabel(\"Pass Rate (%)\")\n",
+        "plt.ylabel(\"Number of Teams\")\n",
+        "plt.show()"
+      ],
+      "id": "5b492ad5",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "Most teams tend to be around the same level of aggressiveness when it comes to attempting 4th downs. There is a little bit of variation, but not an incredible amount. Most teams have attempted between 15-30 attempts in the 2023 season. There are a few teams that are outliers, and attempted a lot of fourth downs. The two major outliers were the Carolina Panthers and Detroit Lions in the 2023 season. "
+      ],
+      "id": "099eb2c7"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "plt.figure()\n",
+        "final_dataset[\"fourth_down_attempts\"].hist(bins=16, color=\"blue\")\n",
+        "plt.title(\"Fourth Down Attempts\")\n",
+        "plt.xlabel(\"Attempts\")\n",
+        "plt.ylabel(\"Teams\")\n",
+        "plt.show()"
+      ],
+      "id": "509c2271",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "There is a fair amount of variation when it comes to fourth down success rate. It tends to follow generally a normal distribution, with an exception around 45, where more teams cluster. There are a couple teams that have trouble converting, and one team, the Philadelphia Eagles, which were an outlier in terms of success. This is due to the introduction of their \"Tush Push\" play, which proved to be very successful for them."
+      ],
+      "id": "5fbeddd2"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "plt.figure()\n",
+        "final_dataset[\"fourth_down_success_rate_pct\"].hist(bins=16, color=\"blue\")\n",
+        "plt.title(\"Fourth Down Success Rate Percentage\")\n",
+        "plt.xlabel(\"Percentage\")\n",
+        "plt.ylabel(\"Teams\")\n",
+        "plt.show()"
+      ],
+      "id": "fbb7ec82",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "There is a decent amount of variation in total team scoring drives. This makes sense, considering there is generally a good variation of teams that are good vs bad in the league, and scoring is obviously an essential part of what makes a team good or bad. There is a peak in the center, around 65-70 scoring drives, but not a peak outside of that. "
+      ],
+      "id": "bb08ca5b"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "plt.figure()\n",
+        "final_dataset[\"total_scoring_drives\"].hist(bins=16, color=\"blue\")\n",
+        "plt.title(\"Total Scoring Drives\")\n",
+        "plt.xlabel(\"Drives\")\n",
+        "plt.ylabel(\"Teams\")\n",
+        "plt.show()"
+      ],
+      "id": "b592cf36",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "There is a pretty conistent amount of plays that it takes teams to score on average. Between 7 and 9 plays is the averge amount. There are still outliers, however. The New York Jets had the quickest scoring drives, and the Carolina Panthers had the longest scoring drives on average. This matches up with the Panthers being a team that went for a lot of 4th downs, as it means that drives consistently went to 4th downs. "
+      ],
+      "id": "638c7e5d"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "plt.figure()\n",
+        "final_dataset[\"avg_plays_per_scoring_drive\"].hist(bins=16, color=\"blue\")\n",
+        "plt.title(\"Average Plays Per Scoring Drive\")\n",
+        "plt.xlabel(\"Plays per Drive\")\n",
+        "plt.ylabel(\"Teams\")\n",
+        "plt.show()"
+      ],
+      "id": "eb8e7556",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "There is a fair amount of variation in terms of red zone plays. The most common cluster was around 160 attempts, with a couple major outliers. \n"
+      ],
+      "id": "a73cad93"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "plt.figure()\n",
+        "final_dataset[\"red_zone_plays\"].hist(bins=15, color=\"blue\")\n",
+        "plt.title(\"Red Zone Plays\")\n",
+        "plt.xlabel(\"Red Zone Attempts\")\n",
+        "plt.ylabel(\"Teams\")\n",
+        "plt.show()"
+      ],
+      "id": "d87969d5",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "Red zone success rate is something that is pretty consistent across the league. Most teams hover at around 14-18%, with very few outliers. "
+      ],
+      "id": "619bafb3"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "plt.figure()\n",
+        "final_dataset[\"red_zone_td_rate_pct\"].hist(bins=15, color=\"blue\")\n",
+        "plt.title(\"Red Zone Success Rate\")\n",
+        "plt.xlabel(\"Touchdown Rate\")\n",
+        "plt.ylabel(\"Teams\")\n",
+        "plt.show()"
+      ],
+      "id": "4a8358ef",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "### Answering Main Questions\n",
+        "\n",
+        "\n",
+        "This plot answers our fist main questions, which team had the highest pass rate of the top 10 in 2023. As we can see in the chart, the Washington Commanders, New York Jets and New York Giants were the top three teams in early down pass rate. They passed more than 60% of times on early downs, with the Commanders coming close to 70%."
+      ],
+      "id": "81acd0e5"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "top_10_pass_rate = final_dataset[final_dataset[\"early_down_pass_rate_rank\"] <= 10].sort_values(\"early_down_pass_rate_rank\")\n",
+        "plt.figure()\n",
+        "top_10_pass_rate[\"early_down_pass_rate_pct\"].plot(kind=\"bar\")\n",
+        "plt.xticks(ticks=range(10), labels=top_10_pass_rate[\"posteam\"])\n",
+        "plt.title(\"Early Down Pass Rate Top 10\")\n",
+        "plt.xlabel(\"Team\")\n",
+        "plt.ylabel(\"Pass Rate\")\n",
+        "plt.show()"
+      ],
+      "id": "10011e7a",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "Our second main question dealt with the teams that attempted fourth downs most frequently. As seen earlier in our analysis, the Carolina Panthers and Detroit Lions were the top two teams, followed by the New York Giants. The Panthers attempted the most fourth downs during the 2023 season."
+      ],
+      "id": "a3b8893f"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "top10_fourth_down = final_dataset[final_dataset[\"fourth_down_attempt_rank\"] <= 10].sort_values(\"fourth_down_attempt_rank\")\n",
+        "plt.figure()\n",
+        "top10_fourth_down[\"fourth_down_attempts\"].plot(kind=\"bar\")\n",
+        "plt.xticks(ticks=range(10), labels=top10_fourth_down[\"posteam\"])\n",
+        "plt.title(\"Fourth Down Attempts Top 10\")\n",
+        "plt.xlabel(\"Team\")\n",
+        "plt.ylabel(\"Attempts\")\n",
+        "plt.show()"
+      ],
+      "id": "c57ae5b7",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "Our third main question deals with the teams that had the fewest playes per socring drive. The New York Jets, Miami Dolphins, and New England Patriots had the fewest in this regard. All three of these teams are in the same division, coincidentally. \n"
+      ],
+      "id": "ce7fd46d"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "top10_scoring_drives = final_dataset[final_dataset[\"scoring_drive_efficiency_rank\"] <= 10].sort_values(\"scoring_drive_efficiency_rank\")\n",
+        "plt.figure()\n",
+        "top10_scoring_drives[\"avg_plays_per_scoring_drive\"].plot(kind=\"bar\")\n",
+        "plt.xticks(ticks=range(10), labels=top10_scoring_drives[\"posteam\"])\n",
+        "plt.title(\"Fewest Plays per Scoring Drive\")\n",
+        "plt.xlabel(\"Team\")\n",
+        "plt.ylabel(\"Avg Plays Per Scoring Drive\")\n",
+        "plt.show()"
+      ],
+      "id": "cf0ec3fb",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "Our last main question asks which teams converted their red zone opportunities into touchdowns most frequently. The top three in this regard were the San Franciso 49ers, the New England Patriots, and the Washington Commanders. \n"
+      ],
+      "id": "b3c97d1a"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "top10_redzone = final_dataset[final_dataset[\"red_zone_td_rank\"] <= 10].sort_values(\"red_zone_td_rank\")\n",
+        "plt.figure()\n",
+        "top10_redzone[\"red_zone_td_rate_pct\"].plot(kind=\"bar\")\n",
+        "plt.xticks(ticks=range(10), labels=top10_redzone[\"posteam\"])\n",
+        "plt.title(\"Red Zone TD Rate Top 10\")\n",
+        "plt.xlabel(\"Team\")\n",
+        "plt.ylabel(\"TD Rate\")\n",
+        "plt.show()"
+      ],
+      "id": "82121188",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "### EDA Narrative\n",
+        "\n",
+        "Our four main metric distributions all told interesting stories. The distribution for early down pass rate showed that most teams in the NFL pass more than they run on early downs, which is a sharp contrast from how the NFL used to operate. \n",
+        "\n",
+        "There is a solid variation when it comes to fourth down attempts in the NFL, but the most interesting takeaway is that attempts and fourth down success percentage are not very correlated. The teams that attempt the most fourth downs are not the teams that convert the most. This can be seen with the Eagles. They had the highest percentage, but were nt in the top 10 of attempts.\n",
+        "\n",
+        "We found out that scoring drive length is pretty uniform around the NFL, with most drives ending up at 8 plays per scoring drive. \n",
+        "\n",
+        "Red zone touchdown rate was pretty uniform as well, with between 14-18 percent being the norm. Although this difference may seem small, over the course of a season, these percentage points tend to add up. \n",
+        "\n",
+        "An interesting thing to see were the teams that were in the top percentage of multiple questions. For example, the New York Jets were top 3 in early down pass rate and fewest plays per scoring drive. This correlation could be a very interesting thing to study in future projects.\n",
+        "\n",
+        "### Bias-Related EDA Code"
+      ],
+      "id": "8ff0b133"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "import pandas as pd\n",
+        "import nflreadpy as nfl\n",
+        "import matplotlib.pyplot as plt\n",
+        "\n",
+        "final_dataset = pd.read_csv(\"nfl_team_tendencies_2023.csv\")\n",
+        "\n",
+        "pbp_reg = nfl.load_pbp(seasons=[2023]).to_pandas()\n",
+        "pbp_reg = pbp_reg[pbp_reg[\"season_type\"] == \"REG\"].copy()"
+      ],
+      "id": "2668b54f",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "# Missing values\n",
+        "print(final_dataset.isnull().sum())"
+      ],
+      "id": "a815c836",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "# Visualization of missing values\n",
+        "missing_counts = final_dataset.isnull().sum()\n",
+        "\n",
+        "plt.figure(figsize=(10, 5))\n",
+        "missing_counts.plot(kind=\"bar\")\n",
+        "plt.title(\"Missing Values by Column\")\n",
+        "plt.xlabel(\"Column\")\n",
+        "plt.ylabel(\"Missing Values\")\n",
+        "plt.xticks(rotation=45)\n",
+        "plt.show()"
+      ],
+      "id": "86f47002",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "# Team balance check\n",
+        "print(\"Number of teams:\", final_dataset[\"posteam\"].nunique())\n",
+        "\n",
+        "team_play_counts = pbp_reg[\"posteam\"].value_counts()\n",
+        "\n",
+        "print(team_play_counts)"
+      ],
+      "id": "1b0ce2c7",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "# Visualization of offensive plays by team\n",
+        "plt.figure(figsize=(10, 5))\n",
+        "team_play_counts.sort_values().plot(kind=\"barh\")\n",
+        "plt.title(\"Number of Offensive Plays by Team\")\n",
+        "plt.xlabel(\"Play Count\")\n",
+        "plt.ylabel(\"Team\")\n",
+        "plt.show()"
+      ],
+      "id": "0c6cbe5b",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "# Relationship between red zone opportunities and touchdown rate\n",
+        "x = final_dataset[\"red_zone_plays\"]\n",
+        "y = final_dataset[\"red_zone_td_rate_pct\"]\n",
+        "\n",
+        "print(\"Correlation:\", x.corr(y))\n",
+        "\n",
+        "plt.figure()\n",
+        "plt.scatter(x, y)\n",
+        "plt.xlabel(\"Red Zone Plays\")\n",
+        "plt.ylabel(\"Red Zone TD Rate\")\n",
+        "plt.title(\"Red Zone Opportunities vs Touchdown Rate\")\n",
+        "plt.show()"
+      ],
+      "id": "3bdd6fae",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "# Distribution of fourth down attempts\n",
+        "plt.figure()\n",
+        "final_dataset[\"fourth_down_attempts\"].hist(bins=16)\n",
+        "plt.title(\"Distribution of Fourth Down Attempts\")\n",
+        "plt.xlabel(\"Attempts\")\n",
+        "plt.ylabel(\"Teams\")\n",
+        "plt.show()"
+      ],
+      "id": "2e7795e2",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "### Bias-Related EDA Narrative\n",
+        "\n",
+        "We checked for a few potential sources of bias in the dataset. First, there were no missing values in the final dataset since teams with no data in certain situations were filled with zeros during the merge. That said, not all teams had the same number of offensive plays. Cleveland ran over 1,500 while Las Vegas ran around 1,300. This means some teams simply had more opportunities to rack up stats in situations like red zone plays or fourth down attempts.\n",
+        "\n",
+        "We also looked at whether having more opportunities correlated with better efficiency. The correlation between red zone plays and red zone touchdown rate was only 0.273, so volume alone doesn't explain performance. Finally, there's some inherent bias in how the raw data is recorded. Human scorekeepers classify plays in real time, so there may be some inconsistencies in how certain plays are categorized, even after nflverse standardizes the data.\n",
+        "***\n",
+        "\n",
+        "## Data Product and Description\n",
+        "\n",
+        "Column Name                         Description                            Values\n",
+        "\n",
+        "Posteam                         NFL team abbreviation                    String\n",
+        "\n",
+        "early_down_long_plays    Number of 1/2nd down plays with 10+ yards to go    Intege\n",
+        "\n",
+        "early_down_pass_rate_pct  Percentage of those plays that were passes    Numeric percentage\n",
+        "\n",
+        "early_down_pass_rate_rank       Rank of pass rate among NFL teams              Integer\n",
+        "\n",
+        "fourth_down_attempts  Offensive 4th down conversion attempts      Integer\n",
+        "\n",
+        "fourth_down_success_rate_pct Percentage of successful 4th down conversions    Numeric percentage\n",
+        "\n",
+        "fourth_down_attempt_rank      Rank of fourth down attempts among NFL teams        Integer\n",
+        "\n",
+        "total_scoring_drives           Total number of scoring drives                Integer\n",
+        "\n",
+        " avg_plays_per_scoring_drive  Average number of plays needed to score        Numeric\n",
+        "\n",
+        "scoring_drive_efficiency_rank Rank based on fastest scoring drives            Integer\n",
+        "\n",
+        " red_zone_plays      Total offensive plays inside the opponent’s 20-yard line    Integer\n",
+        "\n",
+        " red_zone_td_rate_pct  Percentage of red zone plays resulting in touchdowns    Numeric percentage\n",
+        "\n",
+        " red_zone_td_rank    Rank of red zone touchdown efficiency                    Integer\n",
+        "\n",
+        "### How to Load the CSV"
+      ],
+      "id": "51e3b90e"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "import pandas as pd\n",
+        "df = pd.read_csv(\"nfl_team_tendencies_2023.csv\")\n",
+        "\n",
+        "print(df.head())"
+      ],
+      "id": "c4db23a5",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "Dataset can also be opened with Microsoft Excel or Google sheets \n",
+        "\n",
+        "\n",
+        "### Intended Uses\n",
+        "\n",
+        "The dataset is designed for NFL fans, fantasy football players, and sports content creators who want to compare team tendencies during the 2023 NFL season. Examples of how it could be used: Identifying teams that frequently pass in long-yardage situations, comparing aggressive versus conservative offensive teams, finding teams with efficient scoring drives, comparing red zone efficiency across teams, etc."
+      ],
+      "id": "76b0bd40"
+    }
+  ],
+  "metadata": {
+    "kernelspec": {
+      "name": "python3",
+      "language": "python",
+      "display_name": "Python 3 (ipykernel)",
+      "path": "/opt/miniconda3/share/jupyter/kernels/python3"
+    }
+  },
+  "nbformat": 4,
+  "nbformat_minor": 5
+}

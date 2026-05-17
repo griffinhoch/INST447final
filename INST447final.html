@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.8.27">
+<meta name="generator" content="quarto-1.9.37">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -10,6 +10,9 @@
 
 <title>INST447 Final Project</title>
 <style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
 div.columns{display: flex; gap: min(4vw, 1.5em);}
@@ -62,15 +65,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" integrity="sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2" crossorigin="anonymous"></script><script src="INST447final_files/libs/clipboard/clipboard.min.js"></script>
 <script src="INST447final_files/libs/quarto-html/quarto.js" type="module"></script>
 <script src="INST447final_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="INST447final_files/libs/quarto-html/axe/axe-check.js" type="module"></script>
 <script src="INST447final_files/libs/quarto-html/popper.min.js"></script>
 <script src="INST447final_files/libs/quarto-html/tippy.umd.min.js"></script>
 <script src="INST447final_files/libs/quarto-html/anchor.min.js"></script>
 <link href="INST447final_files/libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="INST447final_files/libs/quarto-html/quarto-syntax-highlighting-ed96de9b727972fe78a7b5d16c58bf87.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="INST447final_files/libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="INST447final_files/libs/bootstrap/bootstrap.min.js"></script>
 <link href="INST447final_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="INST447final_files/libs/bootstrap/bootstrap-d6a003b94517c951b2d65075d42fb01b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="INST447final_files/libs/bootstrap/bootstrap-138a6193a3bd40baf1e627da441a4734.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script src="https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.min.js" integrity="sha384-c9c+LnTbwQ3aujuU7ULEPVvgLs+Fn6fJUvIGTsuu1ZcCf11fiEubah0ttpca4ntM sha384-6V1/AdqZRWk1KAlWbKBlGhN7VG4iE/yAZcO6NZPMF8od0vukrvr0tg4qY6NSrItx" crossorigin="anonymous"></script>
 
 <script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
@@ -129,7 +131,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="sources-and-extraction" class="level2">
 <h2 class="anchored" data-anchor-id="sources-and-extraction">Source(s) and Extraction</h2>
-<div id="13ef7173" class="cell" data-execution_count="1">
+<div id="12aa45ff" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Required packages — run this once in the terminal before using the notebook:</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co"># pip install nflreadpy pandas pyarrow</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -295,7 +297,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="extraction-code" class="level3">
 <h3 class="anchored" data-anchor-id="extraction-code">Extraction Code</h3>
-<div id="bb2480dd" class="cell" data-execution_count="2">
+<div id="99f1a2f1" class="cell" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load 2023 NFL play-by-play data</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>pbp <span class="op">=</span> nfl.load_pbp(seasons<span class="op">=</span>[<span class="dv">2023</span>])</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -317,7 +319,7 @@ First 20 column names:
 </section>
 <section id="preview-of-raw-dataset" class="level3">
 <h3 class="anchored" data-anchor-id="preview-of-raw-dataset">Preview of Raw Dataset</h3>
-<div id="8a02fde9" class="cell" data-execution_count="3">
+<div id="7534fd2a" class="cell" data-execution_count="3">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>pbp.head()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="3">
 <div>
@@ -481,7 +483,7 @@ First 20 column names:
 </section>
 <section id="save-raw-dataset" class="level3">
 <h3 class="anchored" data-anchor-id="save-raw-dataset">Save Raw Dataset</h3>
-<div id="7565bd7c" class="cell" data-execution_count="4">
+<div id="defdcd31" class="cell" data-execution_count="4">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Save the raw data before making changes.</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Note: this file is large, so it should not be committed to GitHub.</span></span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>pbp.to_csv(<span class="st">"raw_nfl_pbp_2023.csv"</span>, index<span class="op">=</span><span class="va">False</span>)</span>
@@ -514,7 +516,7 @@ First 20 column names:
 </section>
 <section id="check-that-the-raw-data-is-available" class="level3">
 <h3 class="anchored" data-anchor-id="check-that-the-raw-data-is-available">Check That the Raw Data Is Available</h3>
-<div id="2e2a3fb5" class="cell" data-execution_count="5">
+<div id="b91ad5e9" class="cell" data-execution_count="5">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># If the Source &amp; Extraction section already ran, pbp should already exist.</span></span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="co"># This backup makes the section easier to run by itself if needed.</span></span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -532,7 +534,7 @@ First 20 column names:
 <section id="step-1-filter-to-regular-season-games" class="level3">
 <h3 class="anchored" data-anchor-id="step-1-filter-to-regular-season-games">Step 1: Filter to Regular Season Games</h3>
 <p>We are focusing on regular season tendencies, so we remove postseason games.</p>
-<div id="35b8bb93" class="cell" data-execution_count="6">
+<div id="3f32d5cf" class="cell" data-execution_count="6">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>pbp_reg <span class="op">=</span> pbp[pbp[<span class="st">"season_type"</span>] <span class="op">==</span> <span class="st">"REG"</span>].copy()</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Regular season plays: </span><span class="sc">{</span>pbp_reg<span class="sc">.</span>shape[<span class="dv">0</span>]<span class="sc">:,}</span><span class="ss">"</span>)</span>
@@ -546,7 +548,7 @@ Removed 2,266 non-regular-season plays</code></pre>
 <section id="step-2-create-a-red-zone-indicator" class="level3">
 <h3 class="anchored" data-anchor-id="step-2-create-a-red-zone-indicator">Step 2: Create a Red Zone Indicator</h3>
 <p>The raw data has <code>yardline_100</code>, but we create a simpler <code>in_red_zone</code> column to make the red zone question easier to answer.</p>
-<div id="5fb667fb" class="cell" data-execution_count="7">
+<div id="9581027d" class="cell" data-execution_count="7">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>pbp_reg[<span class="st">"in_red_zone"</span>] <span class="op">=</span> (pbp_reg[<span class="st">"yardline_100"</span>] <span class="op">&lt;=</span> <span class="dv">20</span>).astype(<span class="bu">int</span>)</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>red_zone_count <span class="op">=</span> pbp_reg[<span class="st">"in_red_zone"</span>].<span class="bu">sum</span>()</span>
@@ -559,7 +561,7 @@ Removed 2,266 non-regular-season plays</code></pre>
 <section id="step-3-keep-scrimmage-plays" class="level3">
 <h3 class="anchored" data-anchor-id="step-3-keep-scrimmage-plays">Step 3: Keep Scrimmage Plays</h3>
 <p>For most of our questions, we only want normal offensive plays. This removes plays like kickoffs and extra points.</p>
-<div id="ba28cd08" class="cell" data-execution_count="8">
+<div id="6c06faf7" class="cell" data-execution_count="8">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>pbp_scrimmage <span class="op">=</span> pbp_reg[</span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>    (pbp_reg[<span class="st">"play_type"</span>].isin([<span class="st">"pass"</span>, <span class="st">"run"</span>, <span class="st">"qb_kneel"</span>, <span class="st">"qb_spike"</span>])) <span class="op">|</span></span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    (pbp_reg[<span class="st">"pass"</span>] <span class="op">==</span> <span class="dv">1</span>) <span class="op">|</span></span>
@@ -575,7 +577,7 @@ Removed 2,266 non-regular-season plays</code></pre>
 <section id="question-1-pass-rate-on-1st2nd-down-with-10-yards-to-go" class="level3">
 <h3 class="anchored" data-anchor-id="question-1-pass-rate-on-1st2nd-down-with-10-yards-to-go">Question 1: Pass Rate on 1st/2nd Down with 10+ Yards to Go</h3>
 <p>This answers which teams passed most often on 1st or 2nd down when they needed at least 10 yards.</p>
-<div id="18551806" class="cell" data-execution_count="9">
+<div id="cd2deca7" class="cell" data-execution_count="9">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>early_down_long <span class="op">=</span> pbp_scrimmage[</span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>    (pbp_scrimmage[<span class="st">"down"</span>].isin([<span class="dv">1</span>, <span class="dv">2</span>])) <span class="op">&amp;</span></span>
 <span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    (pbp_scrimmage[<span class="st">"ydstogo"</span>] <span class="op">&gt;=</span> <span class="dv">10</span>)</span>
@@ -712,7 +714,7 @@ Removed 2,266 non-regular-season plays</code></pre>
 <section id="question-2-fourth-down-attempts-and-success-rate" class="level3">
 <h3 class="anchored" data-anchor-id="question-2-fourth-down-attempts-and-success-rate">Question 2: Fourth Down Attempts and Success Rate</h3>
 <p>This answers which teams went for it most often on 4th down and how often they converted.</p>
-<div id="72eb60eb" class="cell" data-execution_count="10">
+<div id="f99971c8" class="cell" data-execution_count="10">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>fourth_down_attempts <span class="op">=</span> pbp_scrimmage[</span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>    (pbp_scrimmage[<span class="st">"down"</span>] <span class="op">==</span> <span class="dv">4</span>) <span class="op">&amp;</span></span>
 <span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>    (pbp_scrimmage[<span class="st">"play_type"</span>].isin([<span class="st">"pass"</span>, <span class="st">"run"</span>]))</span>
@@ -849,7 +851,7 @@ Removed 2,266 non-regular-season plays</code></pre>
 <section id="question-3-average-plays-per-scoring-drive" class="level3">
 <h3 class="anchored" data-anchor-id="question-3-average-plays-per-scoring-drive">Question 3: Average Plays Per Scoring Drive</h3>
 <p>This answers which teams scored in the fewest plays on average.</p>
-<div id="d5a877ab" class="cell" data-execution_count="11">
+<div id="42856d1d" class="cell" data-execution_count="11">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>scoring_drive_plays <span class="op">=</span> pbp_scrimmage[pbp_scrimmage[<span class="st">"drive_ended_with_score"</span>] <span class="op">==</span> <span class="dv">1</span>].copy()</span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>unique_scoring_drives <span class="op">=</span> scoring_drive_plays.groupby(</span>
@@ -964,7 +966,7 @@ Removed 2,266 non-regular-season plays</code></pre>
 <section id="question-4-red-zone-touchdown-rate" class="level3">
 <h3 class="anchored" data-anchor-id="question-4-red-zone-touchdown-rate">Question 4: Red Zone Touchdown Rate</h3>
 <p>This answers which teams scored touchdowns most often on plays inside the opponent’s 20-yard line.</p>
-<div id="09b1036d" class="cell" data-execution_count="12">
+<div id="2d727b41" class="cell" data-execution_count="12">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>red_zone_plays <span class="op">=</span> pbp_scrimmage[pbp_scrimmage[<span class="st">"in_red_zone"</span>] <span class="op">==</span> <span class="dv">1</span>].copy()</span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>q4_results <span class="op">=</span> red_zone_plays.groupby(<span class="st">"posteam"</span>).agg(</span>
@@ -1086,7 +1088,7 @@ Removed 2,266 non-regular-season plays</code></pre>
 <section id="combine-results-into-final-dataset" class="level3">
 <h3 class="anchored" data-anchor-id="combine-results-into-final-dataset">Combine Results into Final Dataset</h3>
 <p>Now we merge the four result tables into one final dataset, so each team has all of its metrics in the same row.</p>
-<div id="8368183b" class="cell" data-execution_count="13">
+<div id="46a97ae2" class="cell" data-execution_count="13">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>final_dataset <span class="op">=</span> q1_results[</span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>    [<span class="st">"posteam"</span>, <span class="st">"early_down_long_plays"</span>, <span class="st">"early_down_pass_rate_pct"</span>, <span class="st">"early_down_pass_rate_rank"</span>]</span>
 <span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>].copy()</span>
@@ -1230,7 +1232,7 @@ Removed 2,266 non-regular-season plays</code></pre>
 </section>
 <section id="save-final-dataset" class="level3">
 <h3 class="anchored" data-anchor-id="save-final-dataset">Save Final Dataset</h3>
-<div id="f36805ef" class="cell" data-execution_count="14">
+<div id="794a57d7" class="cell" data-execution_count="14">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>final_dataset.to_csv(<span class="st">"nfl_team_tendencies_2023.csv"</span>, index<span class="op">=</span><span class="va">False</span>)</span>
 <span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>q1_results.to_csv(<span class="st">"q1_early_down_pass_rate.csv"</span>, index<span class="op">=</span><span class="va">False</span>)</span>
@@ -1264,7 +1266,7 @@ Removed 2,266 non-regular-season plays</code></pre>
 <h3 class="anchored" data-anchor-id="summary-statistics">Summary Statistics</h3>
 <p>Before answering our four core questions, we investigated our data deeply and took a look at summary statistics and variable distributions.</p>
 <p>Here, we take a look at the minimum, maximum, and average values for our eight variables at a quick glance. We will be diving deeper into each of these distributions later on.</p>
-<div id="c82ccbf2" class="cell" data-execution_count="15">
+<div id="08172dfa" class="cell" data-execution_count="15">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>sum_columns <span class="op">=</span> [<span class="st">"early_down_long_plays"</span>, <span class="st">"early_down_pass_rate_pct"</span>,<span class="st">"fourth_down_attempts"</span>,<span class="st">"fourth_down_success_rate_pct"</span>, <span class="st">"total_scoring_drives"</span>, <span class="st">"avg_plays_per_scoring_drive"</span>,<span class="st">"red_zone_plays"</span>, <span class="st">"red_zone_td_rate_pct"</span>]</span>
 <span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -1383,7 +1385,7 @@ Removed 2,266 non-regular-season plays</code></pre>
 </div>
 </div>
 <p>We check the median of each variable. Without context, these summary statistics do not mean much. We will dive deeper later, however. We also check to make sure there are no missing values, of which there are none.</p>
-<div id="e7b8ae8e" class="cell" data-execution_count="16">
+<div id="eeca458a" class="cell" data-execution_count="16">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(final_dataset[sum_columns].median())</span>
 <span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(final_dataset[sum_columns].isnull().<span class="bu">sum</span>())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -1413,7 +1415,7 @@ dtype: int64</code></pre>
 <h3 class="anchored" data-anchor-id="correlation">Correlation</h3>
 <p>An interesting correlation metric to check is the relationship between teams that attempt a lot of fourth down plays compared to the teams that are most successful at fourth downs percentage wise. Are the most aggressive teamas converting the most?</p>
 <p>There is actually a slight negative correlation between these two variables at -.122, meaning that these two variables are not very correlated at all. There is not much of a relationship between aggressive teams and successful teams on fourth down, a slight inverse one if any.</p>
-<div id="c4ddab20" class="cell" data-execution_count="17">
+<div id="398f856f" class="cell" data-execution_count="17">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> final_dataset[<span class="st">"fourth_down_attempts"</span>]</span>
 <span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> final_dataset[<span class="st">"fourth_down_success_rate_pct"</span>]</span>
 <span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -1423,7 +1425,7 @@ dtype: int64</code></pre>
 </div>
 </div>
 <p>Here is a scatter plot showing there is not much correlation between fourth down attempts and percentage.</p>
-<div id="92b296cb" class="cell" data-execution_count="18">
+<div id="35c07d51" class="cell" data-execution_count="18">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>plt.figure</span>
@@ -1442,7 +1444,7 @@ dtype: int64</code></pre>
 </div>
 <p>Another correlation metric that we thought may be interesting was the correlation between long scoring drives and frequency. Do longer scoring drives often lead to more successful drives?</p>
 <p>The answer here is also no, there is not much correlation between drive length and scoring frequency at all.</p>
-<div id="cc02a308" class="cell" data-execution_count="19">
+<div id="a8532f25" class="cell" data-execution_count="19">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> final_dataset[<span class="st">"total_scoring_drives"</span>]</span>
 <span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> final_dataset[<span class="st">"avg_plays_per_scoring_drive"</span>]</span>
 <span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -1456,7 +1458,7 @@ dtype: int64</code></pre>
 <h3 class="anchored" data-anchor-id="visualizations-and-distributions">Visualizations and Distributions</h3>
 <p>We visualized the distribution of each variable to see if there were any patterns to be found in the data.</p>
 <p>Most teams in the NFL tend to gather around the 55% pass rate mark. However, there is another peak at 61% pass rate. The distribution is generally bimodal, showing that there are generally two groups of teams in the NFL, aggressive teams and conservative teams on early downs. There are a few outliers, nobody that is terribly far outside the normal range, however. The Washington Commanders are the most aggressive team, and the Miami Dolphins are the most conservative team.</p>
-<div id="f69dc579" class="cell" data-execution_count="20">
+<div id="49004c8b" class="cell" data-execution_count="20">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>plt.figure()</span>
 <span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>plt.hist(final_dataset[<span class="st">"early_down_pass_rate_pct"</span>].values, bins<span class="op">=</span><span class="dv">15</span>, color<span class="op">=</span><span class="st">"blue"</span>)</span>
 <span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Early Down Pass Rate Distribution"</span>)</span>
@@ -1472,7 +1474,7 @@ dtype: int64</code></pre>
 </div>
 </div>
 <p>Most teams tend to be around the same level of aggressiveness when it comes to attempting 4th downs. There is a little bit of variation, but not an incredible amount. Most teams have attempted between 15-30 attempts in the 2023 season. There are a few teams that are outliers, and attempted a lot of fourth downs. The two major outliers were the Carolina Panthers and Detroit Lions in the 2023 season.</p>
-<div id="b9ca60fd" class="cell" data-execution_count="21">
+<div id="df0988e5" class="cell" data-execution_count="21">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>plt.figure()</span>
 <span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>final_dataset[<span class="st">"fourth_down_attempts"</span>].hist(bins<span class="op">=</span><span class="dv">16</span>, color<span class="op">=</span><span class="st">"blue"</span>)</span>
 <span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Fourth Down Attempts"</span>)</span>
@@ -1488,7 +1490,7 @@ dtype: int64</code></pre>
 </div>
 </div>
 <p>There is a fair amount of variation when it comes to fourth down success rate. It tends to follow generally a normal distribution, with an exception around 45, where more teams cluster. There are a couple teams that have trouble converting, and one team, the Philadelphia Eagles, which were an outlier in terms of success. This is due to the introduction of their “Tush Push” play, which proved to be very successful for them.</p>
-<div id="030eb4e1" class="cell" data-execution_count="22">
+<div id="49ac319b" class="cell" data-execution_count="22">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>plt.figure()</span>
 <span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>final_dataset[<span class="st">"fourth_down_success_rate_pct"</span>].hist(bins<span class="op">=</span><span class="dv">16</span>, color<span class="op">=</span><span class="st">"blue"</span>)</span>
 <span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Fourth Down Success Rate Percentage"</span>)</span>
@@ -1504,7 +1506,7 @@ dtype: int64</code></pre>
 </div>
 </div>
 <p>There is a decent amount of variation in total team scoring drives. This makes sense, considering there is generally a good variation of teams that are good vs bad in the league, and scoring is obviously an essential part of what makes a team good or bad. There is a peak in the center, around 65-70 scoring drives, but not a peak outside of that.</p>
-<div id="6ba6d316" class="cell" data-execution_count="23">
+<div id="ec1ed330" class="cell" data-execution_count="23">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>plt.figure()</span>
 <span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>final_dataset[<span class="st">"total_scoring_drives"</span>].hist(bins<span class="op">=</span><span class="dv">16</span>, color<span class="op">=</span><span class="st">"blue"</span>)</span>
 <span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Total Scoring Drives"</span>)</span>
@@ -1520,7 +1522,7 @@ dtype: int64</code></pre>
 </div>
 </div>
 <p>There is a pretty conistent amount of plays that it takes teams to score on average. Between 7 and 9 plays is the averge amount. There are still outliers, however. The New York Jets had the quickest scoring drives, and the Carolina Panthers had the longest scoring drives on average. This matches up with the Panthers being a team that went for a lot of 4th downs, as it means that drives consistently went to 4th downs.</p>
-<div id="207a0a91" class="cell" data-execution_count="24">
+<div id="9f2aa2cd" class="cell" data-execution_count="24">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>plt.figure()</span>
 <span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>final_dataset[<span class="st">"avg_plays_per_scoring_drive"</span>].hist(bins<span class="op">=</span><span class="dv">16</span>, color<span class="op">=</span><span class="st">"blue"</span>)</span>
 <span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Average Plays Per Scoring Drive"</span>)</span>
@@ -1536,7 +1538,7 @@ dtype: int64</code></pre>
 </div>
 </div>
 <p>There is a fair amount of variation in terms of red zone plays. The most common cluster was around 160 attempts, with a couple major outliers.</p>
-<div id="4e339ce4" class="cell" data-execution_count="25">
+<div id="d194d8ff" class="cell" data-execution_count="25">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>plt.figure()</span>
 <span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>final_dataset[<span class="st">"red_zone_plays"</span>].hist(bins<span class="op">=</span><span class="dv">15</span>, color<span class="op">=</span><span class="st">"blue"</span>)</span>
 <span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Red Zone Plays"</span>)</span>
@@ -1552,7 +1554,7 @@ dtype: int64</code></pre>
 </div>
 </div>
 <p>Red zone success rate is something that is pretty consistent across the league. Most teams hover at around 14-18%, with very few outliers.</p>
-<div id="4d7ab541" class="cell" data-execution_count="26">
+<div id="9b46912b" class="cell" data-execution_count="26">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>plt.figure()</span>
 <span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>final_dataset[<span class="st">"red_zone_td_rate_pct"</span>].hist(bins<span class="op">=</span><span class="dv">15</span>, color<span class="op">=</span><span class="st">"blue"</span>)</span>
 <span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Red Zone Success Rate"</span>)</span>
@@ -1571,7 +1573,7 @@ dtype: int64</code></pre>
 <section id="answering-main-questions" class="level3">
 <h3 class="anchored" data-anchor-id="answering-main-questions">Answering Main Questions</h3>
 <p>This plot answers our fist main questions, which team had the highest pass rate of the top 10 in 2023. As we can see in the chart, the Washington Commanders, New York Jets and New York Giants were the top three teams in early down pass rate. They passed more than 60% of times on early downs, with the Commanders coming close to 70%.</p>
-<div id="4072fbd0" class="cell" data-execution_count="27">
+<div id="e3501706" class="cell" data-execution_count="27">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb39"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>top_10_pass_rate <span class="op">=</span> final_dataset[final_dataset[<span class="st">"early_down_pass_rate_rank"</span>] <span class="op">&lt;=</span> <span class="dv">10</span>].sort_values(<span class="st">"early_down_pass_rate_rank"</span>)</span>
 <span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>plt.figure()</span>
 <span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>top_10_pass_rate[<span class="st">"early_down_pass_rate_pct"</span>].plot(kind<span class="op">=</span><span class="st">"bar"</span>)</span>
@@ -1589,7 +1591,7 @@ dtype: int64</code></pre>
 </div>
 </div>
 <p>Our second main question dealt with the teams that attempted fourth downs most frequently. As seen earlier in our analysis, the Carolina Panthers and Detroit Lions were the top two teams, followed by the New York Giants. The Panthers attempted the most fourth downs during the 2023 season.</p>
-<div id="ab731520" class="cell" data-execution_count="28">
+<div id="841f0cdb" class="cell" data-execution_count="28">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb40"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>top10_fourth_down <span class="op">=</span> final_dataset[final_dataset[<span class="st">"fourth_down_attempt_rank"</span>] <span class="op">&lt;=</span> <span class="dv">10</span>].sort_values(<span class="st">"fourth_down_attempt_rank"</span>)</span>
 <span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>plt.figure()</span>
 <span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>top10_fourth_down[<span class="st">"fourth_down_attempts"</span>].plot(kind<span class="op">=</span><span class="st">"bar"</span>)</span>
@@ -1607,7 +1609,7 @@ dtype: int64</code></pre>
 </div>
 </div>
 <p>Our third main question deals with the teams that had the fewest playes per socring drive. The New York Jets, Miami Dolphins, and New England Patriots had the fewest in this regard. All three of these teams are in the same division, coincidentally.</p>
-<div id="51754615" class="cell" data-execution_count="29">
+<div id="5bf6572c" class="cell" data-execution_count="29">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb41"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>top10_scoring_drives <span class="op">=</span> final_dataset[final_dataset[<span class="st">"scoring_drive_efficiency_rank"</span>] <span class="op">&lt;=</span> <span class="dv">10</span>].sort_values(<span class="st">"scoring_drive_efficiency_rank"</span>)</span>
 <span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>plt.figure()</span>
 <span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>top10_scoring_drives[<span class="st">"avg_plays_per_scoring_drive"</span>].plot(kind<span class="op">=</span><span class="st">"bar"</span>)</span>
@@ -1625,7 +1627,7 @@ dtype: int64</code></pre>
 </div>
 </div>
 <p>Our last main question asks which teams converted their red zone opportunities into touchdowns most frequently. The top three in this regard were the San Franciso 49ers, the New England Patriots, and the Washington Commanders.</p>
-<div id="699cc654" class="cell" data-execution_count="30">
+<div id="7ae2164e" class="cell" data-execution_count="30">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb42"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>top10_redzone <span class="op">=</span> final_dataset[final_dataset[<span class="st">"red_zone_td_rank"</span>] <span class="op">&lt;=</span> <span class="dv">10</span>].sort_values(<span class="st">"red_zone_td_rank"</span>)</span>
 <span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>plt.figure()</span>
 <span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>top10_redzone[<span class="st">"red_zone_td_rate_pct"</span>].plot(kind<span class="op">=</span><span class="st">"bar"</span>)</span>
@@ -1653,7 +1655,7 @@ dtype: int64</code></pre>
 </section>
 <section id="bias-related-eda-code" class="level3">
 <h3 class="anchored" data-anchor-id="bias-related-eda-code">Bias-Related EDA Code</h3>
-<div id="605f8acc" class="cell" data-execution_count="31">
+<div id="81415a44" class="cell" data-execution_count="31">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb43"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> nflreadpy <span class="im">as</span> nfl</span>
 <span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
@@ -1663,7 +1665,7 @@ dtype: int64</code></pre>
 <span id="cb43-7"><a href="#cb43-7" aria-hidden="true" tabindex="-1"></a>pbp_reg <span class="op">=</span> nfl.load_pbp(seasons<span class="op">=</span>[<span class="dv">2023</span>]).to_pandas()</span>
 <span id="cb43-8"><a href="#cb43-8" aria-hidden="true" tabindex="-1"></a>pbp_reg <span class="op">=</span> pbp_reg[pbp_reg[<span class="st">"season_type"</span>] <span class="op">==</span> <span class="st">"REG"</span>].copy()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div id="edf23673" class="cell" data-execution_count="32">
+<div id="6acb253f" class="cell" data-execution_count="32">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb44"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Missing values</span></span>
 <span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(final_dataset.isnull().<span class="bu">sum</span>())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
@@ -1683,7 +1685,7 @@ red_zone_td_rank                 0
 dtype: int64</code></pre>
 </div>
 </div>
-<div id="943092a8" class="cell" data-execution_count="33">
+<div id="9f56c628" class="cell" data-execution_count="33">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb46"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Visualization of missing values</span></span>
 <span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>missing_counts <span class="op">=</span> final_dataset.isnull().<span class="bu">sum</span>()</span>
 <span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -1702,7 +1704,7 @@ dtype: int64</code></pre>
 </div>
 </div>
 </div>
-<div id="3eaa5591" class="cell" data-execution_count="34">
+<div id="229bc5f5" class="cell" data-execution_count="34">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb47"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Team balance check</span></span>
 <span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Number of teams:"</span>, final_dataset[<span class="st">"posteam"</span>].nunique())</span>
 <span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -1747,7 +1749,7 @@ LV     1311
 Name: count, dtype: int64</code></pre>
 </div>
 </div>
-<div id="64915061" class="cell" data-execution_count="35">
+<div id="378f4cdc" class="cell" data-execution_count="35">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb49"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Visualization of offensive plays by team</span></span>
 <span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">5</span>))</span>
 <span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a>team_play_counts.sort_values().plot(kind<span class="op">=</span><span class="st">"barh"</span>)</span>
@@ -1763,7 +1765,7 @@ Name: count, dtype: int64</code></pre>
 </div>
 </div>
 </div>
-<div id="03c1dc01" class="cell" data-execution_count="36">
+<div id="15a903bf" class="cell" data-execution_count="36">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb50"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Relationship between red zone opportunities and touchdown rate</span></span>
 <span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> final_dataset[<span class="st">"red_zone_plays"</span>]</span>
 <span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> final_dataset[<span class="st">"red_zone_td_rate_pct"</span>]</span>
@@ -1787,7 +1789,7 @@ Name: count, dtype: int64</code></pre>
 </div>
 </div>
 </div>
-<div id="99ac9de5" class="cell" data-execution_count="37">
+<div id="61b2be99" class="cell" data-execution_count="37">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb52"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Distribution of fourth down attempts</span></span>
 <span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a>plt.figure()</span>
 <span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a>final_dataset[<span class="st">"fourth_down_attempts"</span>].hist(bins<span class="op">=</span><span class="dv">16</span>)</span>
@@ -1828,7 +1830,7 @@ Name: count, dtype: int64</code></pre>
 <p>red_zone_td_rank Rank of red zone touchdown efficiency Integer</p>
 <section id="how-to-load-the-csv" class="level3">
 <h3 class="anchored" data-anchor-id="how-to-load-the-csv">How to Load the CSV</h3>
-<div id="2d0c1b4f" class="cell" data-execution_count="38">
+<div id="835dbb95" class="cell" data-execution_count="38">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb53"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.read_csv(<span class="st">"nfl_team_tendencies_2023.csv"</span>)</span>
 <span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a></span>
