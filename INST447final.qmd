@@ -6,7 +6,11 @@ author: "Griffin Hoch, Brandon Weber, Dany Drammeh, John Valencia"
 
 ## Executive Summary
 
-*(Add executive summary here. Should cover: 1) target audience and purpose, 2) brief summary of the data source, 3) any major conclusions from the analysis, and 4) what parts of the project were especially challenging or interesting.)*
+This project was designed for NFL fans, fantasy football players, and sports analysts interested in comparing offensive team tendencies during the 2023 NFL season. The goal was to create a clean dataset that goes beyond basic stats and instead focuses on how teams behave in specific game situations. Using play-by-play data from nflverse through the Python package nflreadpy, we transformed nearly 49,000 plays into a final team-level dataset with four main metrics: early-down pass rate, fourth down aggressiveness and success rate, average plays per scoring drive, and red zone touchdown efficiency.
+
+Several interesting patterns appeared during the analysis. Most NFL teams passed more often than they ran on early downs, showing how pass-heavy the league has become. Fourth down aggressiveness varied a lot between teams, but teams that went for it more often were not always the most successful. We also found that scoring drive length was fairly similar across the league, while red zone touchdown efficiency showed smaller but still meaningful differences between teams. The New York Jets ranked highly in both early-down pass rate and scoring drive efficiency, which stood out during the analysis.
+
+The hardest part of the project was filtering thousands of plays into the exact situations needed for each research question. We also had to carefully merge and clean the data so that teams were not accidentally removed during transformations. One limitation we found was that some teams had many more offensive opportunities than others, which could affect certain efficiency metrics.
 
 ### Achieved Purpose
 
@@ -136,7 +140,6 @@ We only load one season to keep the project consistent and easier to analyze. Af
 At this point, the dataset still includes everything, including kickoffs, penalties, and other play types. We filter it down later based on what we actually need for our four questions.
 
 ---
-
 ## Transformation Processes
 
 ### Transformation Overview
@@ -536,7 +539,7 @@ plt.ylabel("Pass Rate")
 plt.show()
 ```
 
-Our second main question dealt with the teams that attempted fourth downs most frequently. As seen earlier in our analysis, the Carolina Panthers and Detroit Lions were the top two teams, followed by the New York Giants. The Panthers attempted the most fourth downs by a solid margin. 
+Our second main question dealt with the teams that attempted fourth downs most frequently. As seen earlier in our analysis, the Carolina Panthers and Detroit Lions were the top two teams, followed by the New York Giants. The Panthers attempted the most fourth downs during the 2023 season.
 
 ```{python}
 top10_fourth_down = final_dataset[final_dataset["fourth_down_attempt_rank"] <= 10].sort_values("fourth_down_attempt_rank")
@@ -591,50 +594,56 @@ An interesting thing to see were the teams that were in the top percentage of mu
 
 ### Bias-Related EDA Code
 
+```{python}
 import pandas as pd
 import nflreadpy as nfl
+import matplotlib.pyplot as plt
 
 final_dataset = pd.read_csv("nfl_team_tendencies_2023.csv")
 
 pbp_reg = nfl.load_pbp(seasons=[2023]).to_pandas()
 pbp_reg = pbp_reg[pbp_reg["season_type"] == "REG"].copy()
+```
 
-#missing values
+```{python}
+# Missing values
 print(final_dataset.isnull().sum())
+```
 
-#visualization missing values
-import matplotlib.pyplot as plt
-
+```{python}
+# Visualization of missing values
 missing_counts = final_dataset.isnull().sum()
 
-plt.figure(figsize=(10,5))
+plt.figure(figsize=(10, 5))
 missing_counts.plot(kind="bar")
 plt.title("Missing Values by Column")
 plt.xlabel("Column")
 plt.ylabel("Missing Values")
 plt.xticks(rotation=45)
 plt.show()
+```
 
-#team balance check
-
-#amount of teams in the final dataset
+```{python}
+# Team balance check
 print("Number of teams:", final_dataset["posteam"].nunique())
 
-#rows per team in original regular season dataset
 team_play_counts = pbp_reg["posteam"].value_counts()
 
 print(team_play_counts)
+```
 
-plt.figure(figsize=(10,5))
+```{python}
+# Visualization of offensive plays by team
+plt.figure(figsize=(10, 5))
 team_play_counts.sort_values().plot(kind="barh")
 plt.title("Number of Offensive Plays by Team")
 plt.xlabel("Play Count")
 plt.ylabel("Team")
 plt.show()
+```
 
-#relationship between team success and opportunities 
-
-#red zone opportunities with touchdowns 
+```{python}
+# Relationship between red zone opportunities and touchdown rate
 x = final_dataset["red_zone_plays"]
 y = final_dataset["red_zone_td_rate_pct"]
 
@@ -646,21 +655,23 @@ plt.xlabel("Red Zone Plays")
 plt.ylabel("Red Zone TD Rate")
 plt.title("Red Zone Opportunities vs Touchdown Rate")
 plt.show()
+```
 
-#distribution of fourth down attempts
-#some teams may be more aggressive because they played from behind more often
+```{python}
+# Distribution of fourth down attempts
 plt.figure()
 final_dataset["fourth_down_attempts"].hist(bins=16)
-plt.title("distribution of Fourth Down Attempts")
+plt.title("Distribution of Fourth Down Attempts")
 plt.xlabel("Attempts")
 plt.ylabel("Teams")
 plt.show()
+```
 
 ### Bias-Related EDA Narrative
 
-We checked for a few potential sources of bias in the dataset. First, there were no missing values in the final dataset since teams with no data in certain situations were filled with zeros during the merge. That said, not all teams had the same number of offensive plays — Cleveland ran over 1,500 while Las Vegas ran around 1,300. This means some teams simply had more opportunities to rack up stats in situations like red zone plays or fourth down attempts.
+We checked for a few potential sources of bias in the dataset. First, there were no missing values in the final dataset since teams with no data in certain situations were filled with zeros during the merge. That said, not all teams had the same number of offensive plays. Cleveland ran over 1,500 while Las Vegas ran around 1,300. This means some teams simply had more opportunities to rack up stats in situations like red zone plays or fourth down attempts.
 
-We also looked at whether having more opportunities correlated with better efficiency. The correlation between red zone plays and red zone touchdown rate was only 0.273, so volume alone doesn't explain performance. Finally, there's some inherent bias in how the raw data is recorded — human scorekeepers classify plays in real time, so there may be some inconsistencies in how certain plays are categorized, even after nflverse standardizes the data.
+We also looked at whether having more opportunities correlated with better efficiency. The correlation between red zone plays and red zone touchdown rate was only 0.273, so volume alone doesn't explain performance. Finally, there's some inherent bias in how the raw data is recorded. Human scorekeepers classify plays in real time, so there may be some inconsistencies in how certain plays are categorized, even after nflverse standardizes the data.
 ---
 
 ## Data Product and Description
@@ -693,20 +704,17 @@ scoring_drive_efficiency_rank Rank based on fastest scoring drives            In
 
  red_zone_td_rank    Rank of red zone touchdown efficiency                    Integer
 
-# HOW TO LOAD CSV
-(python)
-
+### How to Load the CSV
+```{python}
 
 import pandas as pd
 df = pd.read_csv("nfl_team_tendencies_2023.csv")
 
 print(df.head())
-
+```
 Dataset can also be opened with Microsoft Excel or Google sheets 
 
 
-# INTENDED USES 
+### Intended Uses
 
 The dataset is designed for NFL fans, fantasy football players, and sports content creators who want to compare team tendencies during the 2023 NFL season. Examples of how it could be used: Identifying teams that frequently pass in long-yardage situations, comparing aggressive versus conservative offensive teams, finding teams with efficient scoring drives, comparing red zone efficiency across teams, etc.
-
-
